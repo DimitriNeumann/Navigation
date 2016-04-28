@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -21,8 +23,8 @@ MapManager mapManager;
         //Toast.makeText(this.getContext(), R.string.hello_fragment, Toast.LENGTH_SHORT).show();
 
         View root = inflater.inflate(R.layout.fragment_main, container, false); // der View, welcher das komplette Fragment beinhaltet.
-        mapManager = new MapManager(this.getContext(), root.findViewById(R.id.imageView));
-        mapManager.loadExampleImage();
+        MapManager map = (MapManager) root.findViewById(R.id.view);
+        map.setImage(ImageSource.resource(R.mipmap.example_plan));
         return root;
     }
 }
