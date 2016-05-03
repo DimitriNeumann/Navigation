@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.easibeacon.protocol;
+package ai.hs_owl.navigation.protocol;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,8 +116,8 @@ public class IBeaconProtocol {
 	/**
 	 * Private empty constructor
 	 */
-	private IBeaconProtocol(){};
-	
+	private IBeaconProtocol(){}
+
 	/**
 	 * Obtains the reference to the singleton <code>IBeaconProtocol</code>
 	 * 
@@ -185,10 +185,7 @@ public class IBeaconProtocol {
 		final BluetoothManager bluetoothManager =
 		        (BluetoothManager) c.getSystemService(Context.BLUETOOTH_SERVICE);
 		_ibp._bluetoothAdapter = bluetoothManager.getAdapter();
-		if (_ibp._bluetoothAdapter == null || !_ibp._bluetoothAdapter.isEnabled()) {
-		    return false;
-		}		
-		return true;
+		return !(_ibp._bluetoothAdapter == null || !_ibp._bluetoothAdapter.isEnabled());
 	}
 	
 	/**
@@ -263,7 +260,7 @@ public class IBeaconProtocol {
 	 */
 	private IBeacon findIfExists(IBeacon b){
 		for(int i=0;i<_arrOrderedIBeacons.size();i++){
-			IBeacon existing = (IBeacon)_arrOrderedIBeacons.get(i);
+			IBeacon existing = _arrOrderedIBeacons.get(i);
 			if(existing.equals(b))
 				return existing;
 		}
@@ -403,8 +400,7 @@ public class IBeaconProtocol {
 	 */
 	private boolean getConnectable(byte[] data){
 		// If byte 31 of the advertisement is 0 then is not connectable
-		if(data[31] != 0) return true;
-		return false;
+		return data[31] != 0;
 	}
 	
 	/**

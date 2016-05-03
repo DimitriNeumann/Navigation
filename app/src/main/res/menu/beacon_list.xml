@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ai.hs_owl.navigation.demos.BeaconListActivity" >
+
+    <item
+        android:id="@+id/action_refresh"
+        android:orderInCategory="1"
+        yourapp:showAsAction="always"
+        android:icon="@drawable/ic_action_refresh"
+        android:title="@string/action_refresh"/>
+
+</menu>

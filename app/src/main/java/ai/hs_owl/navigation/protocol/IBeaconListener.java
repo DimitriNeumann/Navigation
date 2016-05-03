@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.easibeacon.protocol;
+package ai.hs_owl.navigation.protocol;
 
 /**
  * Listener for iBeacon protocol events
@@ -33,29 +33,29 @@ public interface IBeaconListener {
 	 * Called when entering a new region
 	 * @param ibeacon Information about the iBeacon whose region has been entered
 	 */
-	public void enterRegion(IBeacon ibeacon);
+	void enterRegion(IBeacon ibeacon);
 	
 	/**
 	 * Called when exiting a region
 	 * @param ibeacon Information about the iBeacon whose region has been left
 	 */
-	public void exitRegion(IBeacon ibeacon);
+	void exitRegion(IBeacon ibeacon);
 
 	/**
 	 * Called when a new iBeacon has been found during scanning
 	 * @param ibeacon The iBeacon found
 	 */
-	public void beaconFound(IBeacon ibeacon);
+	void beaconFound(IBeacon ibeacon);
 
 	/**
 	 * Called upon any change in the scanning state
 	 * @param state The state, either <code>SEARCH_STARTED</code>, <code>SEARCH_END_EMPTY</code> or <code>SEARCH_END_SUCCESS</code>
 	 */
-	public void searchState(int state);
+	void searchState(int state);
 
 	/**
 	 * Called to notify an error in the iBeacon protocol, probably due to the BluetoothAdapter
 	 * @param status The error status code
 	 */
-	public void operationError(int status);	
+	void operationError(int status);
 }

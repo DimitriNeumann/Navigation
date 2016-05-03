@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.easibeacon.protocol;
+package ai.hs_owl.navigation.protocol;
 
 public class Utils {
 	/**

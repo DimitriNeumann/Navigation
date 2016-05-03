@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.easibeacon.protocol;
+package ai.hs_owl.navigation.protocol;
 
 import java.io.Serializable;
 
@@ -287,9 +287,7 @@ public class IBeacon implements Serializable{
 	    }
 	   // Log.i(Utils.LOG_TAG, "Comparing");
 	    final IBeacon ibeacon = (IBeacon) obj;
-		if(this.isSameRegionAs(ibeacon) && _macAddress.equals(ibeacon.getMacAddress()))
-			return true;
-		return false;
+		return this.isSameRegionAs(ibeacon) && _macAddress.equals(ibeacon.getMacAddress());
 	}
 	
 	/**
@@ -299,11 +297,9 @@ public class IBeacon implements Serializable{
 	    if (ibeacon == null) {
 	        return false;
 	    }
-		if(getUuidHexString().equals(ibeacon.getUuidHexString())
+		return getUuidHexString().equals(ibeacon.getUuidHexString())
 				&& _major == ibeacon.getMajor()
-				&& _minor == ibeacon.getMinor())
-			return true;
-		return false;
+				&& _minor == ibeacon.getMinor();
 	}
 	
 	@Override
