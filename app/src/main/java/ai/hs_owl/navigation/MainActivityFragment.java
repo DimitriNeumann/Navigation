@@ -24,7 +24,7 @@ MapManager mapManager;
 
         View root = inflater.inflate(R.layout.fragment_main, container, false); // der View, welcher das komplette Fragment beinhaltet.
         MapManager map = (MapManager) root.findViewById(R.id.view);
-        map.setImage(ImageSource.resource(R.mipmap.example_plan));
+        map.setImage(ImageSource.resource(R.mipmap.ic_launcher));
         return root;
     }
 }
