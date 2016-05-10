@@ -1,6 +1,8 @@
 package ai.hs_owl.navigation;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,14 +17,15 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 /**
  * Created by mberg on 22.04.2016.
  */
-public class MapManager extends SubsamplingScaleImageView {
+public class Map extends SubsamplingScaleImageView {
     public int strokeWidth;
+    Bitmap icon;
 
-    public MapManager(Context context)
+    public Map(Context context)
     {
         super(context);
     }
-    public MapManager(Context context, AttributeSet attributeSet)
+    public Map(Context context, AttributeSet attributeSet)
     {
         super(context, attributeSet);
         initialise();
@@ -32,6 +35,8 @@ public class MapManager extends SubsamplingScaleImageView {
         float density = getResources().getDisplayMetrics().densityDpi;
         strokeWidth = (int)(density/60f);
         setMinimumScaleType(this.SCALE_TYPE_CENTER_CROP);
+        icon = BitmapFactory.decodeResource(this.getContext().getResources(), R.mipmap.location_icon);
+
     }
 
     @Override
@@ -47,16 +52,14 @@ public class MapManager extends SubsamplingScaleImageView {
        paint.setStrokeWidth(strokeWidth*2);
        paint.setTextSize(40);
 
-       PointF sCenter = new PointF(getSWidth()/2, getSHeight()/2);
-       PointF vCenter = sourceToViewCoord(sCenter);
 
-       float radius = (getScale() * getSWidth()) * 0.1f;
+       PointF sLeft = Location.getPositionOnMap();
+       PointF vCenter = sourceToViewCoord(sLeft);
+       vCenter.x = vCenter.x-icon.getWidth()/2;
+       vCenter.y = vCenter.y-icon.getHeight()/2;
 
-       PointF sLeft = new PointF(radius/2, radius/2);
-       vCenter = sourceToViewCoord(sLeft);
+       if(vCenter.x <0 || vCenter.y <0)
+           c.drawBitmap(icon,vCenter.x, vCenter.y,  paint);
 
-       c.drawCircle(vCenter.x, vCenter.y, radius, paint);
-       paint.setColor(Color.BLACK);
-       c.drawText("DRAW", vCenter.x-20, vCenter.y+20, paint);
    }
 }
