@@ -38,9 +38,9 @@ public class Queries {
         return new float[]{0,0,0};
     }
     //Schreiben
-    public void insertNewBeacon(String id, float x, float y, float z)
+    public void insertNewBeacon(String id, float x, float y, int ebene)
     {
-        db.getWritableDatabase().rawQuery("INSERT INTO " + db.BEACONS_TABLE_NAME + "(`"+db.BEACONS_COLUMN_ID+"`, `"+db.BEACONS_COLUMN_X+"`, `"+db.BEACONS_COLUMN_Y+"`, `"+db.BEACONS_COLUMN_Z+"`) VALUES('"+id+"', "+x+", "+y+", "+z+")", null);
+        db.getWritableDatabase().rawQuery("INSERT INTO " + db.BEACONS_TABLE_NAME + "(`"+db.BEACONS_COLUMN_ID+"`, `"+db.BEACONS_COLUMN_X+"`, `"+db.BEACONS_COLUMN_Y+"`, `"+db.BEACONS_COLUMN_EBENE+"`) VALUES('"+id+"', "+x+", "+y+", "+ebene+")", null);
     }
 
 }

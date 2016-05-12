@@ -23,6 +23,7 @@ public class MainActivityFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_main, container, false); // der View, welcher das komplette Fragment beinhaltet.
         Map map = (Map) root.findViewById(R.id.view);
         map.setImage(ImageSource.resource(R.mipmap.sechsdrei));
+
         return root;
     }
 }

@@ -16,8 +16,8 @@ public class Database extends SQLiteOpenHelper {
     public static String BEACONS_COLUMN_ID ="_id";
     public static String BEACONS_COLUMN_X ="X";
     public static String BEACONS_COLUMN_Y ="Y";
-    public static String BEACONS_COLUMN_Z ="Z";
-    private static String BEACONS_TABLE_CREATE ="create table "+BEACONS_TABLE_NAME+" ("+BEACONS_COLUMN_ID+" text not null, "+BEACONS_COLUMN_X+" REAL not null, "+BEACONS_COLUMN_Y+" REAL not null," + BEACONS_COLUMN_Z+" REAL not null)";
+    public static String BEACONS_COLUMN_EBENE="ebene";
+    private static String BEACONS_TABLE_CREATE ="create table "+BEACONS_TABLE_NAME+" ("+BEACONS_COLUMN_ID+" text not null, "+BEACONS_COLUMN_X+" REAL not null, "+BEACONS_COLUMN_Y+" REAL not null," + BEACONS_COLUMN_EBENE+" integer not null)";
 
 
     public Database(Context context) {
