@@ -19,7 +19,7 @@ import java.net.URLConnection;
  */
 public class Download {
     static boolean isLoading = false;
-    public static void startDownload(Context c, String... url)
+    public static void startDownload(Context c,  Synchronize.DownloadHandler callback,String... url)
     {
         if(isLoading)
             return;
@@ -31,22 +31,24 @@ public class Download {
         pDialog.setMax(0);
         pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         pDialog.setCancelable(false);
-
-        DownloadFileFromURL downloadFileFromURL = new DownloadFileFromURL(pDialog);
+        pDialog.show();
+        DownloadFileFromURL downloadFileFromURL = new DownloadFileFromURL(pDialog, callback);
         downloadFileFromURL.execute(url);
 
 
 
     }
-    private static class DownloadFileFromURL extends AsyncTask<String, String, String> {
+    private static class DownloadFileFromURL extends AsyncTask<String, String, Boolean> {
         ProgressDialog pDialog;
+        Synchronize.DownloadHandler callback;
 
-       public DownloadFileFromURL(ProgressDialog pDialog)
+       public DownloadFileFromURL(ProgressDialog pDialog, Synchronize.DownloadHandler callback)
        {
            this.pDialog = pDialog;
+           this.callback = callback;
        }
         @Override
-        protected String doInBackground(String... f_url) {
+        protected Boolean doInBackground(String... f_url) {
             int count;
             try {
                 for (String s : f_url) {
@@ -56,10 +58,8 @@ public class Download {
                     int lenghtOfFile = conection.getContentLength();
                     InputStream input = new BufferedInputStream(url.openStream(),
                             8192);
-                    OutputStream output = new FileOutputStream(Environment
-                            .getExternalStorageDirectory().toString()
-                            +"/hs_owl_navigation/"+ s.substring(s.lastIndexOf("//")));
-                    publishProgress(new String[]{"-1", s.substring(s.lastIndexOf("//"))});
+                    OutputStream output = new FileOutputStream(Synchronize.rootpath+ s.substring(s.lastIndexOf("/")));
+                    publishProgress(new String[]{"-1", s.substring(s.lastIndexOf("/"))});
                     byte data[] = new byte[1024];
 
                     long total = 0;
@@ -73,11 +73,12 @@ public class Download {
                     output.close();
                     input.close();
                 }
+                return true;
                 }catch(Exception e) {
                 Log.e("Error: ", e.getMessage());
             }
 
-                return null;
+                return false;
 
 
         }
@@ -88,9 +89,11 @@ public class Download {
                 pDialog.setProgress(Integer.parseInt(progress[0]));
         }
         @Override
-        protected void onPostExecute(String file_url) {
+        protected void onPostExecute(Boolean success) {
             pDialog.dismiss();
             isLoading = false;
+            if(success)
+                callback.data_received();
         }
 
     }

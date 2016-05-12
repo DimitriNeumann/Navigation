@@ -8,11 +8,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+
+import ai.hs_owl.navigation.database.LayerManager;
 
 /**
  * Created by mberg on 22.04.2016.
@@ -32,11 +35,13 @@ public class Map extends SubsamplingScaleImageView {
     }
 
     private void initialise() {
+        setWillNotDraw(false);
         float density = getResources().getDisplayMetrics().densityDpi;
         strokeWidth = (int)(density/60f);
         setMinimumScaleType(this.SCALE_TYPE_CENTER_CROP);
         icon = BitmapFactory.decodeResource(this.getContext().getResources(), R.mipmap.location_icon);
-
+        /*Thread th = new Thread(run);
+        th.start();*/
     }
 
     @Override
@@ -58,8 +63,9 @@ public class Map extends SubsamplingScaleImageView {
        vCenter.x = vCenter.x-icon.getWidth()/2;
        vCenter.y = vCenter.y-icon.getHeight()/2;
 
-       if(vCenter.x <0 || vCenter.y <0)
+       //if(vCenter.x <0 || vCenter.y <0)
            c.drawBitmap(icon,vCenter.x, vCenter.y,  paint);
 
    }
+
 }

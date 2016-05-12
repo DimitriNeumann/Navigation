@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by mberg on 10.05.2016.
  */
 public class Database extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION =6;
     public static final String DATABASE_NAME = "navigation.db";
 
     //Beacons
@@ -17,7 +17,7 @@ public class Database extends SQLiteOpenHelper {
     public static String BEACONS_COLUMN_X ="X";
     public static String BEACONS_COLUMN_Y ="Y";
     public static String BEACONS_COLUMN_EBENE="ebene";
-    private static String BEACONS_TABLE_CREATE ="create table "+BEACONS_TABLE_NAME+" ("+BEACONS_COLUMN_ID+" text not null, "+BEACONS_COLUMN_X+" REAL not null, "+BEACONS_COLUMN_Y+" REAL not null," + BEACONS_COLUMN_EBENE+" integer not null)";
+    public static String BEACONS_TABLE_CREATE ="create table "+BEACONS_TABLE_NAME+" ("+BEACONS_COLUMN_ID+" text not null, "+BEACONS_COLUMN_X+" REAL not null, "+BEACONS_COLUMN_Y+" REAL not null," + BEACONS_COLUMN_EBENE+" integer not null)";
 
 
     public Database(Context context) {
@@ -26,14 +26,13 @@ public class Database extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.rawQuery(BEACONS_TABLE_CREATE, null);
-
+        db.execSQL(BEACONS_TABLE_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Löschen der alten Tabellen
-        db.rawQuery("DROP " + BEACONS_TABLE_NAME, null);
+        db.execSQL("DROP TABLE IF EXISTS " + BEACONS_TABLE_NAME);
         // Die Neuen erstellen
         onCreate(db);
     }

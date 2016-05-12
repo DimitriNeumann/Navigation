@@ -3,6 +3,7 @@ package ai.hs_owl.navigation.database;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.PointF;
+import android.util.Log;
 
 /**
  * Created by mberg on 10.05.2016.
@@ -40,7 +41,12 @@ public class Queries {
     //Schreiben
     public void insertNewBeacon(String id, float x, float y, int ebene)
     {
-        db.getWritableDatabase().rawQuery("INSERT INTO " + db.BEACONS_TABLE_NAME + "(`"+db.BEACONS_COLUMN_ID+"`, `"+db.BEACONS_COLUMN_X+"`, `"+db.BEACONS_COLUMN_Y+"`, `"+db.BEACONS_COLUMN_EBENE+"`) VALUES('"+id+"', "+x+", "+y+", "+ebene+")", null);
+        Log.i("Query", "INSERT INTO " + db.BEACONS_TABLE_NAME + "("+db.BEACONS_COLUMN_ID+", "+db.BEACONS_COLUMN_X+", "+db.BEACONS_COLUMN_Y+", "+db.BEACONS_COLUMN_EBENE+") VALUES('"+id+"', "+x+", "+y+", "+ebene+")");
+        db.getWritableDatabase().execSQL("INSERT INTO " + db.BEACONS_TABLE_NAME + "("+db.BEACONS_COLUMN_ID+", "+db.BEACONS_COLUMN_X+", "+db.BEACONS_COLUMN_Y+", "+db.BEACONS_COLUMN_EBENE+") VALUES('"+id+"', "+x+", "+y+", "+ebene+")");
     }
 
+    public void clearTable(String beaconsTableName) {
+        db.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + beaconsTableName);
+        db.getWritableDatabase().execSQL(Database.BEACONS_TABLE_CREATE);
+    }
 }
