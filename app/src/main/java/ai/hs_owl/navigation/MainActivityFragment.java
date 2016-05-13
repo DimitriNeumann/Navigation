@@ -17,46 +17,26 @@ import ai.hs_owl.navigation.database.LayerManager;
  */
 public class MainActivityFragment extends Fragment {
     Map map;
-    Runnable run = new Runnable()
-    {
 
-        int layer=-1;
-        @Override
-        public void run() {
-            while(true)
-            {
-                if((layer==-1 && Location.getLayer()!=-1)|| layer!=Location.getLayer()) { // wurde erstmals gesetzt
-                    layer = Location.getLayer();
-                    String uri = LayerManager.getPathToLayer(layer);
-                    Log.i("uri", uri);
-                    if(uri!=null) {
-                        Log.i("uri", "not null");
-                        map.setImage(ImageSource.uri(uri));
-                    }
-                }
-               // map.invalidate();
-            }
-        }
-    };
     public MainActivityFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //Toast.makeText(this.getContext(), R.string.hello_fragment, Toast.LENGTH_SHORT).show();
-
         View root = inflater.inflate(R.layout.fragment_main, container, false); // der View, welcher das komplette Fragment beinhaltet.
         map = (Map) root.findViewById(R.id.view);
-        map.setImage(ImageSource.uri(LayerManager.getPathToLayer(1)));
+        //map.setImage(ImageSource.uri(LayerManager.getPathToLayer(1)));
 
-        root.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Synchronize.sync(MainActivityFragment.this.getContext());
-            }
-        });
-        //this.getActivity().runOnUiThread(run);
+        initializeButton(root);
         return root;
     }
+    private void initializeButton(View v)
+    {
+        v.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Synchronize.sync(MainActivityFragment.this.getContext());
+        }
+    });}
 }

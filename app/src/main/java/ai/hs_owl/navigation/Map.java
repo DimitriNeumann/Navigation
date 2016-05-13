@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import ai.hs_owl.navigation.database.LayerManager;
  * Created by mberg on 22.04.2016.
  */
 public class Map extends SubsamplingScaleImageView {
+    private static boolean run=true;
     public int strokeWidth;
     Bitmap icon;
 
@@ -40,8 +42,8 @@ public class Map extends SubsamplingScaleImageView {
         strokeWidth = (int)(density/60f);
         setMinimumScaleType(this.SCALE_TYPE_CENTER_CROP);
         icon = BitmapFactory.decodeResource(this.getContext().getResources(), R.mipmap.location_icon);
-        /*Thread th = new Thread(run);
-        th.start();*/
+        RefreshMap rm = new RefreshMap(this);
+        rm.execute("");
     }
 
     @Override
@@ -67,5 +69,43 @@ public class Map extends SubsamplingScaleImageView {
            c.drawBitmap(icon,vCenter.x, vCenter.y,  paint);
 
    }
+
+    private class RefreshMap extends AsyncTask<String, Integer, String>
+    {
+        Map map;
+        int layer=-1;
+        public RefreshMap(Map m){
+            map = m;
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            while(Map.run)
+            {
+                if(layer!=Location.getLayer())
+                {
+                    layer = Location.getLayer();
+                    publishProgress(1);
+                }
+                publishProgress(0);
+
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+        @Override
+        public void onProgressUpdate(Integer... progress)
+        {
+            if(progress[0]==1) {
+                    map.setImage(LayerManager.getImageSource(Location.getLayer()));
+                map.invalidate();
+            }
+            else if(progress[0]==0)
+            map.invalidate();
+        }
+    }
 
 }

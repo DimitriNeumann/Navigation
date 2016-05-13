@@ -33,7 +33,7 @@ public class Queries {
         c.moveToFirst();
         if(c.getCount()>0)
         {
-            float[] returnValue = new float[]{(Float.parseFloat(c.getInt(c.getColumnIndex(db.BEACONS_COLUMN_X))+"")),Float.parseFloat(c.getInt(c.getColumnIndex(db.BEACONS_COLUMN_X))+""), Float.parseFloat(c.getInt(c.getColumnIndex(db.BEACONS_COLUMN_X))+"")};
+            float[] returnValue = new float[]{(Float.parseFloat(c.getInt(c.getColumnIndex(db.BEACONS_COLUMN_X))+"")),Float.parseFloat(c.getInt(c.getColumnIndex(db.BEACONS_COLUMN_Y))+""), Float.parseFloat(c.getInt(c.getColumnIndex(db.BEACONS_COLUMN_EBENE))+"")};
             return returnValue;
         }
         return new float[]{0,0,0};
