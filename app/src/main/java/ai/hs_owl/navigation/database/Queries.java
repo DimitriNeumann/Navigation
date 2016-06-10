@@ -49,4 +49,8 @@ public class Queries {
         db.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + beaconsTableName);
         db.getWritableDatabase().execSQL(Database.BEACONS_TABLE_CREATE);
     }
+    public boolean hasBeacon(String id)
+    {
+        return(db.getReadableDatabase().rawQuery("SELECT * FROM " + db.BEACONS_TABLE_NAME + " WHERE " + db.BEACONS_COLUMN_ID + "='"+id+"'", null).getCount()>0);
+    }
 }

@@ -21,10 +21,13 @@ public class Download {
     static boolean isLoading = false;
     public static void startDownload(Context c,  Synchronize.DownloadHandler callback,String... url)
     {
+        Log.i("Sync", "downloading 2");
+
         if(isLoading)
             return;
         else
             isLoading = true;
+
         ProgressDialog pDialog = new ProgressDialog(c);
         pDialog.setTitle("Lade Datei(en)...");
         pDialog.setIndeterminate(false);
@@ -32,8 +35,14 @@ public class Download {
         pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         pDialog.setCancelable(false);
         pDialog.show();
+        for(String s: url)
+        {
+            Log.i("URLS", s);
+        }
         DownloadFileFromURL downloadFileFromURL = new DownloadFileFromURL(pDialog, callback);
-        downloadFileFromURL.execute(url);
+        downloadFileFromURL.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
+
+       // downloadFileFromURL.execute(url);
 
 
 
@@ -46,13 +55,16 @@ public class Download {
        {
            this.pDialog = pDialog;
            this.callback = callback;
+           Log.i("Downloader","Downloader created");
        }
         @Override
         protected Boolean doInBackground(String... f_url) {
+            Log.i("doInBackground", "started");
             int count;
             try {
                 for (String s : f_url) {
                     URL url = new URL(s);
+                    Log.i("Loading", "File:" + s);
                     URLConnection conection = url.openConnection();
                     conection.connect();
                     int lenghtOfFile = conection.getContentLength();

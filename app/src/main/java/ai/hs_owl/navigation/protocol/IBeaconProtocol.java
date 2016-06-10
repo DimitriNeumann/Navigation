@@ -354,6 +354,7 @@ public class IBeaconProtocol {
 	 * Direct call to start scanning for iBeacons
 	 */
 	public void startScan(){
+		Log.i("StartScan", (_bluetoothAdapter==null)+"");
 		if(_bluetoothAdapter != null)
 			scanIBeacons(true);
 	}

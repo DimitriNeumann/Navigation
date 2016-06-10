@@ -8,7 +8,7 @@ import android.graphics.PointF;
  */
 public class Location {
     static PointF position;
-    static int layer= -1;
+    static int layer= 1;
     public static void setLayer(int layer)
     {
         Location.layer = layer;

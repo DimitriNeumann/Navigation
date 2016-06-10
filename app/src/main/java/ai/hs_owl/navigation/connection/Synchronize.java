@@ -2,6 +2,7 @@ package ai.hs_owl.navigation.connection;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -19,7 +20,7 @@ import ai.hs_owl.navigation.database.Queries;
 public class Synchronize {
     public static String rootpath = Environment.getExternalStorageDirectory().getPath().toString() + "/hs_owl_navigation";
     private static String csvpath =rootpath+"/beacons.csv";
-    private static String zippath =rootpath +"/latest.zip";
+    private static String zippath =rootpath +"/ebenen.zip";
 
 
 
@@ -30,8 +31,12 @@ public class Synchronize {
     }
     public static void sync(final Context c)
     {
+        Log.i("Sync", "started");
+
         deleteFolders(new File(rootpath));
         createFolders();
+        Log.i("Sync", "downloading");
+
         Download.startDownload(c, new DownloadHandler() {
             @Override
             public void data_received() {
@@ -50,7 +55,7 @@ public class Synchronize {
                 }
                 Location.setLayer(1);
             }
-        }, new String[]{"http://www.mbapps.de/navi/latest.zip", "http://www.mbapps.de/navi/beacons.csv"});
+        }, new String[]{"http://www.mbcode.de/ebenen.zip", "http://www.mbcode.de/beacons.csv"});
 
     }
     private static void deleteFolders(File folder){

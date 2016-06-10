@@ -33,17 +33,17 @@ public class Map extends SubsamplingScaleImageView {
     public Map(Context context, AttributeSet attributeSet)
     {
         super(context, attributeSet);
-        initialise();
+       // initialise();
     }
 
-    private void initialise() {
+    public void initialise() {
         setWillNotDraw(false);
         float density = getResources().getDisplayMetrics().densityDpi;
         strokeWidth = (int)(density/60f);
         setMinimumScaleType(this.SCALE_TYPE_CENTER_CROP);
         icon = BitmapFactory.decodeResource(this.getContext().getResources(), R.mipmap.location_icon);
         RefreshMap rm = new RefreshMap(this);
-        rm.execute("");
+        rm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
     }
 
     @Override
@@ -81,6 +81,7 @@ public class Map extends SubsamplingScaleImageView {
         protected String doInBackground(String... params) {
             while(Map.run)
             {
+                Log.i("AsyncTask", "Läuft Layer = " + Location.getLayer());
                 if(layer!=Location.getLayer())
                 {
                     layer = Location.getLayer();
@@ -100,7 +101,8 @@ public class Map extends SubsamplingScaleImageView {
         public void onProgressUpdate(Integer... progress)
         {
             if(progress[0]==1) {
-                    map.setImage(LayerManager.getImageSource(Location.getLayer()));
+                Log.i("Location:", Location.getLayer() +"");
+                map.setImage(LayerManager.getImageSource(Location.getLayer()));
                 map.invalidate();
             }
             else if(progress[0]==0)
