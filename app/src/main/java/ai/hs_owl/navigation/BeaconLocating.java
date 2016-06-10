@@ -141,15 +141,20 @@ public class BeaconLocating implements IBeaconListener {
     private PointF calcXYPos (double x_1, double y_1, double x_2, double y_2, double x_3, double y_3, double d_1, double d_2, double d_3){
         // Berechnung der X und Y Koordinate
         double x=0,y=0;
-        y = (   (x_2 - x_1)*(Math.pow(x_3,2) + Math.pow(y_3,2) - Math.pow(d_3,2))
-                + (x_1 - x_3)*(Math.pow(x_2,2) + Math.pow(y_2,2) - Math.pow(d_2,2))
-                + (x_3 - x_2)*(Math.pow(x_1,2) + Math.pow(y_1,2) - Math.pow(d_1,2))
-        )       / (2*(y_3*(x_2 - x_1) + y_2*(x_1 - x_3) + y_1*(x_3 - x_2)));
+        //y = (   (x_2 - x_1)*(Math.pow(x_3,2) + Math.pow(y_3,2) - Math.pow(d_3,2))
+        //        + (x_1 - x_3)*(Math.pow(x_2,2) + Math.pow(y_2,2) - Math.pow(d_2,2))
+        //        + (x_3 - x_2)*(Math.pow(x_1,2) + Math.pow(y_1,2) - Math.pow(d_1,2))
+        //)       / (2*(y_3*(x_2 - x_1) + y_2*(x_1 - x_3) + y_1*(x_3 - x_2)));
 
-        x = (   Math.pow(d_2,2) + Math.pow(x_1,2) + Math.pow(y_1,2)
-                - Math.pow(d_1,2) - Math.pow(x_2,2) - Math.pow(y_2,2)
-                - (2* (y_1 - y_2) * y)
-        )       / (2*(x_1 - x_2));
+        //x = (   Math.pow(d_2,2) + Math.pow(x_1,2) + Math.pow(y_1,2)
+        //        - Math.pow(d_1,2) - Math.pow(x_2,2) - Math.pow(y_2,2)
+        //        - (2* (y_1 - y_2) * y)
+        //)       / (2*(x_1 - x_2));
+
+        double S = (Math.pow(x_3, 2) - Math.pow(x_2, 2) + Math.pow(y_3, 2) - Math.pow(y_2, 2) + Math.pow(d_2, 2) - Math.pow(d_3, 2.)) / 2.0;
+        double T = (Math.pow(x_1, 2) - Math.pow(x_2, 2) + Math.pow(y_1, 2) - Math.pow(y_2, 2) + Math.pow(d_2, 2) - Math.pow(d_1, 2.)) / 2.0;
+        y = ((T * (x_2 - x_3)) - (S * (x_2 - x_1))) / (((y_1 - y_2) * (x_2 - x_3)) - ((y_3 - y_2) * (x_2 - x_1)));
+        x = ((y * (y_1 - y_2)) - T) / (x_2 - x_1);
 
         return new PointF((float)x,(float)y);
     }
