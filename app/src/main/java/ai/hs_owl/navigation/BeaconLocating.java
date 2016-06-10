@@ -52,6 +52,7 @@ public class BeaconLocating implements IBeaconListener {
     }
 
     private void scanBeacons(){
+        beacons.clear();leras
         if(_ibp.isScanning())
                 _ibp.stopScan();
             _ibp.reset();
