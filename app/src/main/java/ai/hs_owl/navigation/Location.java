@@ -1,6 +1,5 @@
 package ai.hs_owl.navigation;
 
-import android.graphics.Point;
 import android.graphics.PointF;
 
 /**
@@ -8,30 +7,24 @@ import android.graphics.PointF;
  */
 public class Location {
     static PointF position;
-    static int layer= 1;
-    public static void setLayer(int layer)
-    {
+    static int layer = -1;
+
+    public static void setLayer(int layer) {
         Location.layer = layer;
     }
-    public static int getLayer()
-    {
+
+    public static int getLayer() {
         return layer;
     }
-    public static PointF getPositionOnMap()
-    {
-        if(position==null)
-            position= new PointF(2000,1800);
+
+    public static PointF getPositionOnMap() {
+        if (position == null)
+            position = new PointF(0, 0);
         return position;
     }
-    public static PointF getPosition()
-    {
-        if(position==null)
-            position= new PointF(300,300);
-        return position;
-    }
-    public static void setPosition(PointF position)
-    {
-     Location.position = position;
+
+    public static void setPosition(PointF position) {
+        Location.position = position;
     }
 
 }

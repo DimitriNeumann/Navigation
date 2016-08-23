@@ -1,10 +1,8 @@
 package ai.hs_owl.navigation.connection;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -19,12 +17,15 @@ import java.net.URLConnection;
  */
 public class Download {
     static boolean isLoading = false;
-    public static void startDownload(Context c,  Synchronize.DownloadHandler callback,String... url)
-    {
-        if(isLoading)
+
+    public static void startDownload(Context c, Synchronize.DownloadHandler callback, String... url) {
+        Log.i("Sync", "downloading 2");
+
+        if (isLoading)
             return;
         else
             isLoading = true;
+
         ProgressDialog pDialog = new ProgressDialog(c);
         pDialog.setTitle("Lade Datei(en)...");
         pDialog.setIndeterminate(false);
@@ -32,33 +33,41 @@ public class Download {
         pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         pDialog.setCancelable(false);
         pDialog.show();
+        for (String s : url) {
+            Log.i("URLS", s);
+        }
         DownloadFileFromURL downloadFileFromURL = new DownloadFileFromURL(pDialog, callback);
-        downloadFileFromURL.execute(url);
+        downloadFileFromURL.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
 
+        // downloadFileFromURL.execute(url);
 
 
     }
+
     private static class DownloadFileFromURL extends AsyncTask<String, String, Boolean> {
         ProgressDialog pDialog;
         Synchronize.DownloadHandler callback;
 
-       public DownloadFileFromURL(ProgressDialog pDialog, Synchronize.DownloadHandler callback)
-       {
-           this.pDialog = pDialog;
-           this.callback = callback;
-       }
+        public DownloadFileFromURL(ProgressDialog pDialog, Synchronize.DownloadHandler callback) {
+            this.pDialog = pDialog;
+            this.callback = callback;
+            Log.i("Downloader", "Downloader created");
+        }
+
         @Override
         protected Boolean doInBackground(String... f_url) {
+            Log.i("doInBackground", "started");
             int count;
             try {
                 for (String s : f_url) {
                     URL url = new URL(s);
+                    Log.i("Loading", "File:" + s);
                     URLConnection conection = url.openConnection();
                     conection.connect();
                     int lenghtOfFile = conection.getContentLength();
                     InputStream input = new BufferedInputStream(url.openStream(),
                             8192);
-                    OutputStream output = new FileOutputStream(Synchronize.rootpath+ s.substring(s.lastIndexOf("/")));
+                    OutputStream output = new FileOutputStream(Synchronize.rootpath + s.substring(s.lastIndexOf("/")));
                     publishProgress(new String[]{"-1", s.substring(s.lastIndexOf("/"))});
                     byte data[] = new byte[1024];
 
@@ -74,25 +83,27 @@ public class Download {
                     input.close();
                 }
                 return true;
-                }catch(Exception e) {
+            } catch (Exception e) {
                 Log.e("Error: ", e.getMessage());
             }
 
-                return false;
+            return false;
 
 
         }
+
         protected void onProgressUpdate(String... progress) {
-            if(progress[0].equals("-1"))
+            if (progress[0].equals("-1"))
                 pDialog.setMessage("Datei: " + progress[1]);
             else
                 pDialog.setProgress(Integer.parseInt(progress[0]));
         }
+
         @Override
         protected void onPostExecute(Boolean success) {
             pDialog.dismiss();
             isLoading = false;
-            if(success)
+            if (success)
                 callback.data_received();
         }
 
