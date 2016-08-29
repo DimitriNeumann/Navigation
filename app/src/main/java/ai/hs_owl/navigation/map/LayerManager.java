@@ -1,4 +1,4 @@
-package ai.hs_owl.navigation.database;
+package ai.hs_owl.navigation.map;
 
 import android.util.Log;
 

@@ -1,5 +1,7 @@
 package ai.hs_owl.navigation.database;
 
+import android.util.Log;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -9,17 +11,18 @@ import java.util.Scanner;
  * Created by mberg on 12.05.2016.
  */
 public class CSVReader {
-    public static String[][] read(String path) {
+    public static String[][] read(String path, int max) {
         try {
             Scanner scan = new Scanner(new FileReader(path));
             ArrayList<String> lines = new ArrayList<String>();
 
-            while (scan.hasNext())
-                lines.add(scan.next());
+            while (scan.hasNextLine())
+                lines.add(scan.nextLine());
 
-            String[][] data = new String[lines.size()][4];
+            String[][] data = new String[lines.size()][max];
             for (int i = 0; i < data.length; i++) {
                 data[i] = lines.get(i).split(";");
+                Log.i("Data:", lines.get(i).split(";").length+"");
             }
             return data;
         } catch (FileNotFoundException e) {

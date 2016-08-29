@@ -1,4 +1,4 @@
-package ai.hs_owl.navigation;
+package ai.hs_owl.navigation.map;
 
 import android.graphics.PointF;
 

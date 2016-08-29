@@ -19,30 +19,34 @@
         android:id="@+id/frameLayout">
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:weightSum="1">
+            android:weightSum="1"
+            android:background="#e0ffffff">
 
             <EditText
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
                 android:layout_toStartOf="@+id/button"
+                android:imeOptions="actionSearch"
+                android:singleLine="true"
+                android:drawableStart="@android:drawable/ic_menu_search"
                 android:layout_weight="0.99" />
 
-            <ImageView
+            <ListView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/imageView2"
-                android:src="@android:drawable/ic_search_category_default" />
+                android:id="@+id/listView"
+                android:visibility="gone" />
 
         </LinearLayout>
     </FrameLayout>
 
-    <ai.hs_owl.navigation.Map
+    <ai.hs_owl.navigation.map.Map
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/view"

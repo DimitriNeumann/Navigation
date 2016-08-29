@@ -1,4 +1,4 @@
-package ai.hs_owl.navigation;
+package ai.hs_owl.navigation.map;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,8 +15,8 @@ import android.widget.Toast;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
+import ai.hs_owl.navigation.R;
 import ai.hs_owl.navigation.connection.Synchronize;
-import ai.hs_owl.navigation.database.LayerManager;
 
 /**
  * Created by mberg on 22.04.2016.
