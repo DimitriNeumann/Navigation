@@ -158,7 +158,9 @@ public class Navigation extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Toast.makeText(Navigation.this.getContext(), (String)parent.getItemAtPosition(position), Toast.LENGTH_SHORT).show();
+
                 final ListView listView = (ListView) Navigation.this.getView().findViewById(R.id.listView);
                 listView.setVisibility(View.GONE);
             }

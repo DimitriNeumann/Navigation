@@ -1,13 +1,14 @@
 package ai.hs_owl.navigation.database;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.graphics.PointF;
-import android.util.Log;
+        import android.content.Context;
+        import android.database.Cursor;
+        import android.graphics.PointF;
+        import android.util.Log;
 
-import java.sql.PreparedStatement;
+        import java.sql.PreparedStatement;
 
-import ai.hs_owl.navigation.datastructures.Knoten;
+        import ai.hs_owl.navigation.datastructures.Knoten;
+        import ai.hs_owl.navigation.datastructures.Verbindung;
 
 /**
  * Created by mberg on 10.05.2016.
@@ -57,11 +58,11 @@ public class Queries {
         c.moveToFirst();
         while(!c.isAfterLast())
         {
-           if((Math.abs(loca.x-c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_X)))+Math.abs(loca.x-c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_X))))<distance)
-           {
-               id_smallest = c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_ID));
-               distance = (Math.abs(loca.x-c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_X)))+Math.abs(loca.x-c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_X))));
-           }
+            if((Math.abs(loca.x-c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_X)))+Math.abs(loca.x-c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_X))))<distance)
+            {
+                id_smallest = c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_ID));
+                distance = (Math.abs(loca.x-c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_X)))+Math.abs(loca.x-c.getInt(c.getColumnIndex(db.KNOTEN_COLUMN_X))));
+            }
             c.moveToNext();
         }
         return id_smallest;
@@ -108,6 +109,22 @@ public class Queries {
             i++;
             cursor.moveToNext();
         }
-      return knoten;
+        return knoten;
+    }
+    public Verbindung[] getVerbindungen()
+    {
+        Cursor cursor = db.getReadableDatabase().rawQuery("SELECT * FROM " + db.VERBINDUNGEN_TABLE_NAME , null);
+        cursor.moveToFirst();
+        if(cursor.getCount()==0)
+            return new Verbindung[0];
+        Verbindung[] verbindung = new Verbindung[cursor.getCount()];
+        int i=0;
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            verbindung[i] = new Verbindung(cursor.getInt(cursor.getColumnIndex(db.VERBINDUNGEN_COLUMN_ID)),cursor.getInt(cursor.getColumnIndex(db.VERBINDUNGEN_COLUMN_IDA)),cursor.getInt(cursor.getColumnIndex(db.VERBINDUNGEN_COLUMN_IDB)),cursor.getInt(cursor.getColumnIndex(db.VERBINDUNGEN_COLUMN_GEWICHT)) );
+            i++;
+            cursor.moveToNext();
+        }
+        return verbindung;
     }
 }
