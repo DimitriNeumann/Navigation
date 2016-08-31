@@ -15,8 +15,11 @@ import android.widget.Toast;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
+import java.util.ArrayList;
+
 import ai.hs_owl.navigation.R;
 import ai.hs_owl.navigation.connection.Synchronize;
+import ai.hs_owl.navigation.database.Queries;
 
 /**
  * Created by mberg on 22.04.2016.
@@ -26,7 +29,7 @@ public class Map extends SubsamplingScaleImageView {
     public int strokeWidth;
     Bitmap icon;
     Paint paint;
-
+    PointF points[];
 
     public Map(Context context) {
         super(context);
@@ -42,7 +45,7 @@ public class Map extends SubsamplingScaleImageView {
 
         float density = getResources().getDisplayMetrics().densityDpi;
         strokeWidth = (int) (density / 60f);
-        setMinimumScaleType(this.SCALE_TYPE_CENTER_CROP);
+        setMinimumScaleType(SCALE_TYPE_CENTER_CROP);
         icon = BitmapFactory.decodeResource(this.getContext().getResources(), R.mipmap.location_icon);
 
         paint = new Paint();
@@ -54,7 +57,17 @@ public class Map extends SubsamplingScaleImageView {
         RefreshMap rm = new RefreshMap(this);
         rm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
 
-
+        // TODO: Beispiel Array Liste mit IDs der Knotenpunkte
+        ArrayList ids = new ArrayList();
+        ids.add(0,1);
+        ids.add(1,3);
+        ids.add(2,2);
+        ids.add(3,7);
+        ids.add(4,8);
+        points = new PointF[ids.size()];
+        for (int i=0;i<ids.size();i++){
+            points[i] = Queries.getInstance(getContext()).searchNode(ids.get(i).toString());
+        }
     }
 
     @Override
@@ -63,16 +76,43 @@ public class Map extends SubsamplingScaleImageView {
         if (!isReady())
             return;
 
-
         PointF sLeft = Location.getPositionOnMap();
         PointF vCenter = sourceToViewCoord(sLeft);
         vCenter.x = vCenter.x - icon.getWidth() / 2;
         vCenter.y = vCenter.y - icon.getHeight() / 2;
 
-
         c.drawBitmap(icon, vCenter.x, vCenter.y, paint);
 
+        drawRoute(c, points);
+    }
 
+    private void drawRoute(Canvas c, PointF[] points) {
+        PointF points2[] = new PointF[points.length];
+        for(int i=0;i<points.length;i++){
+            points2[i] = sourceToViewCoord(points[i]);
+        }
+        int ptsLength = (2+((points.length-2)*2))*2;
+
+        float[] pts = new float[ptsLength];
+        int i=0,j=0;
+        while (i<pts.length){
+            if(i==0){
+                pts[i] = points2[j].x;
+                pts[i+1] = points2[j].y;
+                j++;
+            }
+            if(i>=2 && i<ptsLength) {
+                pts[i] = points2[j].x;
+                pts[i+1] = points2[j].y;
+                if(i%4 == 0) j++;
+            }
+            if(i==ptsLength-3){
+                pts[i] = points2[j].x;
+                pts[i+1] = points[j].y;
+            }
+            i+=2;
+        }
+        c.drawLines(pts, paint);
     }
 
     private class RefreshMap extends AsyncTask<String, Integer, String> {
