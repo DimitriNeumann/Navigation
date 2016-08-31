@@ -16,14 +16,7 @@ public class Ort {
 
 	boolean besucht;
 
-	@Override
 
-	public String toString() {
-
-		return "Ort " + name + " (Vorg�nger: " + (0 == vorgaenger ? "[]" : vorgaenger)
-				+ ") [wegl�nge total von start aus: " + weglaenge + "] <besucht: " + besucht + ">";
-
-	}
 
 	public Ort(int ortA) {
 

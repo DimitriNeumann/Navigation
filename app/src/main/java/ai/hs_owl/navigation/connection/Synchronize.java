@@ -44,10 +44,10 @@ public class Synchronize {
                     Queries.getInstance(c).insertNewBeacon(line[0], Float.parseFloat(line[1]), Float.parseFloat(line[2]), Integer.parseInt(line[3]));
                 }
                 Queries.getInstance(c).clearTable(Database.KNOTEN_TABLE_NAME);
-                String[][] knotstable = CSVReader.read(knotpath,5);
+                String[][] knotstable = CSVReader.read(knotpath,6);
                 for (String[] line : knotstable) {
                     Log.i("LINE", line[0]);
-                    Queries.getInstance(c).insertNewKnot(line[0], Float.parseFloat(line[1]), Float.parseFloat(line[2]), Integer.parseInt(line[3]), line.length==5?line[4]:"");
+                    Queries.getInstance(c).insertNewKnot(line[0], Float.parseFloat(line[1]), Float.parseFloat(line[2]), Integer.parseInt(line[3]), Integer.parseInt(line[4]),line.length==6?line[5]:"");
                 }
 
                 Queries.getInstance(c).clearTable(Database.VERBINDUNGEN_TABLE_NAME);

@@ -20,10 +20,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
+import ai.hs_owl.navigation.Routenberechnung.Dijkstra;
+import ai.hs_owl.navigation.Routenberechnung.Ort;
 import ai.hs_owl.navigation.connection.Synchronize;
 import ai.hs_owl.navigation.database.Queries;
 import ai.hs_owl.navigation.datastructures.Knoten;
 import ai.hs_owl.navigation.map.AltBeacon;
+import ai.hs_owl.navigation.map.Location;
 import ai.hs_owl.navigation.map.Map;
 
 public class Navigation extends Fragment {
@@ -144,13 +149,11 @@ public class Navigation extends Fragment {
     {
         // hole Ergebnisse
         results=  Queries.getInstance(this.getContext()).searchKnots(text);
-        String[] show = new String[results.length+3];
+        String[] show = new String[results.length];
         for(int i=0; i<results.length; i++) {
             show[i] = results[i].getBeschreibung();
         }
-        show[results.length] = "Bibliothek";
-        show[results.length+1] = "Mensa";
-        show[results.length+2] = "Prüfungsamt";
+
         //initialisiere Liste mit Ergebnissen
         final ListView listView = (ListView) getView().findViewById(R.id.listView);
         ArrayAdapter arrayAdapter = new ArrayAdapter(this.getContext(), android.R.layout.simple_list_item_1, show);
@@ -158,8 +161,14 @@ public class Navigation extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    ArrayList<Ort> weg = Dijkstra.calculate (Queries.getInstance(Navigation.this.getContext()).getNearestKnot(Location.getPositionOnMap()), results[position].getId(), Navigation.this.getContext());
+                    //map.startNavigation(weg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(Navigation.this.getContext(), "Fehler bei der Berechnung", Toast.LENGTH_SHORT).show();
+                }
 
-                Toast.makeText(Navigation.this.getContext(), (String)parent.getItemAtPosition(position), Toast.LENGTH_SHORT).show();
 
                 final ListView listView = (ListView) Navigation.this.getView().findViewById(R.id.listView);
                 listView.setVisibility(View.GONE);

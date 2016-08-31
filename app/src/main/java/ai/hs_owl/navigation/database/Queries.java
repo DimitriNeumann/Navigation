@@ -50,7 +50,7 @@ public class Queries {
         return (c.getCount()>0);
 
     }
-    public int getNearestBeacon(PointF loca)
+    public int getNearestKnot(PointF loca)
     {
         int id_smallest=-1;
         double distance=Double.MAX_VALUE;

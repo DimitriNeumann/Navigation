@@ -9,7 +9,7 @@ import android.util.Log;
  * Created by mberg on 10.05.2016.
  */
 public class Database extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 11;
     public static final String DATABASE_NAME = "navigation.db";
 
     //Beacons
@@ -25,8 +25,9 @@ public class Database extends SQLiteOpenHelper {
     public static String KNOTEN_COLUMN_X = "X";
     public static String KNOTEN_COLUMN_Y = "Y";
     public static String KNOTEN_COLUMN_BESCHREIBUNG="beschreibung";
+    public static String KNOTEN_COLUMN_FAV="fav";
     public static String KNOTEN_COLUMN_EBENE = "ebene";
-    public static String KNOTEN_TABLE_CREATE = "create table IF NOT EXISTS " + KNOTEN_TABLE_NAME + " (" + KNOTEN_COLUMN_ID + " text not null, " + KNOTEN_COLUMN_X + " REAL not null, " + KNOTEN_COLUMN_Y + " REAL not null," + KNOTEN_COLUMN_EBENE + " integer not null, "+KNOTEN_COLUMN_BESCHREIBUNG+" text not null)";
+    public static String KNOTEN_TABLE_CREATE = "create table IF NOT EXISTS " + KNOTEN_TABLE_NAME + " (" + KNOTEN_COLUMN_ID + " text not null, " + KNOTEN_COLUMN_X + " REAL not null, " + KNOTEN_COLUMN_Y + " REAL not null," + KNOTEN_COLUMN_EBENE + " integer not null, "+KNOTEN_COLUMN_BESCHREIBUNG+" text not null, "+KNOTEN_COLUMN_FAV+ " integer not null)";
     //Verbindungen
     public static String VERBINDUNGEN_TABLE_NAME = "verbindungen";
     public static String VERBINDUNGEN_COLUMN_ID="_id";

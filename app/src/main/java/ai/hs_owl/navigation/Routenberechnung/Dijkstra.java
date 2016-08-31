@@ -8,25 +8,10 @@ import java.util.ArrayList;
 
 
 public class Dijkstra {
-	ArrayList besuchteOrte;
-	Context c;
-	public Dijkstra (int start, int ziel, Context c) {
+	static ArrayList  besuchteOrte;
 
-		try {
-			this.c = c;
-			top(start,ziel);
 
-		} catch (Exception e) {
-
-			// TODO Auto-generated catch block
-
-			e.printStackTrace();
-
-		}
-
-	}
-
-	ArrayList top(int start, int ziel) throws Exception {
+	public static ArrayList calculate(int start, int ziel, Context c) throws Exception {
 
 		Landkarte landkarte = Landkarte.initGraph(c);
 
@@ -65,7 +50,7 @@ public class Dijkstra {
 
 	}
 
-	private void ausgabeAlleWege(Landkarte landkarte, int startOrt, int zielOrt, int weglaenge) {
+	private static void ausgabeAlleWege(Landkarte landkarte, int startOrt, int zielOrt, int weglaenge) {
 
 	//	System.out.println("Die Wegl�nge von " + startOrt + " zu " + zielOrt + " betr�gt " + weglaenge + ".");
 
@@ -89,7 +74,7 @@ public class Dijkstra {
 
 	}
 
-	private void behandleNachbar(Landkarte landkarte, Ort minOrt, Ort angrenzend) {
+	private static void behandleNachbar(Landkarte landkarte, Ort minOrt, Ort angrenzend) {
 
 		int ortAbstand = ortAbstand(minOrt, angrenzend);
 
@@ -101,7 +86,7 @@ public class Dijkstra {
 
 	}
 
-	private void updateWeiterenVonBeiden(Ort minOrt, Ort angrenzend,
+	private static void updateWeiterenVonBeiden(Ort minOrt, Ort angrenzend,
 
 			int ortAbstand) {
 
@@ -127,7 +112,7 @@ public class Dijkstra {
 
 	}
 
-	private int ortAbstand(Ort minOrt, Ort angrenzend) {
+	private static int ortAbstand(Ort minOrt, Ort angrenzend) {
 
 		for (Weg w : minOrt.wege) {
 
@@ -143,7 +128,7 @@ public class Dijkstra {
 
 	}
 
-	public ArrayList getBesuchteOrte(){
+	public static ArrayList getBesuchteOrte(){
 		return besuchteOrte;
 	}
 
