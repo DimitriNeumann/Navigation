@@ -15,10 +15,15 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.davemorrissey.labs.subscaleview.ImageSource;
 
 import java.util.ArrayList;
 
@@ -28,14 +33,17 @@ import ai.hs_owl.navigation.connection.Synchronize;
 import ai.hs_owl.navigation.database.Queries;
 import ai.hs_owl.navigation.datastructures.Knoten;
 import ai.hs_owl.navigation.map.AltBeacon;
+import ai.hs_owl.navigation.map.LayerManager;
 import ai.hs_owl.navigation.map.Location;
 import ai.hs_owl.navigation.map.Map;
+import ai.hs_owl.navigation.map.Orientation;
 
 public class Navigation extends Fragment {
     Map map;
     private static final int REQUEST_BLUETOOTH_ENABLE = 1;
     Knoten[] results;
     AltBeacon altBeacon;
+    Orientation orientation;
 
     public Navigation() {
     }
@@ -53,10 +61,17 @@ public class Navigation extends Fragment {
                 root.findViewById(R.id.listView).setVisibility(View.GONE);
             }
         });
-        map.initialise();
+        map.initialize();
+        map.setBackground(ImageSource.resource(R.mipmap.gridblack));
+        //Ortung
         altBeacon = new AltBeacon(Navigation.this.getContext());
         checkBluetooth();
+        // Suchfeld und Kontrollfelder
         initializeEditText(root);
+        initializeControlls(root);
+        // Blickrichtung
+       orientation= new Orientation(Navigation.this.getContext());
+
         return root;
     }
     @Override
@@ -69,13 +84,22 @@ public class Navigation extends Fragment {
             Synchronize.sync(this.getContext());
         }
         else
-            Log.i("SyncNeeded", false+"");
+        {
+            map.setBackground(LayerManager.getImageSource(1));
+        }
+        orientation.getOrientation(new Orientation.DataHandler() {
+            @Override
+            public void receiveData(float o) {
+                map.setAngle((float) o);
+            }
+        });
 
     }
     @Override
     public void onPause()
     {
         super.onPause();
+        orientation.stop();
         altBeacon.stop();
     }
     @Override
@@ -127,6 +151,41 @@ public class Navigation extends Fragment {
             }
         });
     }
+    private void initializeControlls(View root)
+    {
+        final Switch aSwitch = (Switch) root.findViewById(R.id.switch1);
+        Button up = (Button) root.findViewById(R.id.button2);
+        Button down = (Button) root.findViewById(R.id.button);
+
+        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b)
+                    altBeacon.start();
+                else
+                    altBeacon.stop();
+            }
+        });
+        up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                aSwitch.setChecked(false);
+                altBeacon.stop();
+                map.setBackground(LayerManager.up());
+                
+            }
+        });
+        down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                aSwitch.setChecked(false);
+                altBeacon.stop();
+                map.setBackground(LayerManager.down());
+
+
+            }
+        });
+    }
     private void showFavorites()
     {
         String[] show = new String[3];
@@ -163,7 +222,7 @@ public class Navigation extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     ArrayList<Ort> weg = Dijkstra.calculate (Queries.getInstance(Navigation.this.getContext()).getNearestKnot(Location.getPositionOnMap()), results[position].getId(), Navigation.this.getContext());
-                    //map.startNavigation(weg);
+                    map.startNavigation(weg);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(Navigation.this.getContext(), "Fehler bei der Berechnung", Toast.LENGTH_SHORT).show();

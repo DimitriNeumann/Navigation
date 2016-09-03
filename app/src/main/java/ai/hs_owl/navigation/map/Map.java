@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.os.AsyncTask;
@@ -18,6 +19,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import java.util.ArrayList;
 
 import ai.hs_owl.navigation.R;
+import ai.hs_owl.navigation.Routenberechnung.Ort;
 import ai.hs_owl.navigation.connection.Synchronize;
 import ai.hs_owl.navigation.database.Queries;
 
@@ -29,45 +31,42 @@ public class Map extends SubsamplingScaleImageView {
     public int strokeWidth;
     Bitmap icon;
     Paint paint;
-    PointF points[];
 
+    //Navigation
+    PointF points[];
+    boolean navigationRunning = false;
+    private static int radiusReached = 30;
+    //Winkel
+    float angle=-1;
+    static float lastAngle=0;
     public Map(Context context) {
         super(context);
     }
 
     public Map(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        initialise();
     }
 
-    public void initialise() {
+    public void initialize() {
+        Log.i("Init", true+"");
         setWillNotDraw(false);
 
         float density = getResources().getDisplayMetrics().densityDpi;
         strokeWidth = (int) (density / 60f);
         setMinimumScaleType(SCALE_TYPE_CENTER_CROP);
-        icon = BitmapFactory.decodeResource(this.getContext().getResources(), R.mipmap.location_icon);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        //icon = BitmapFactory.decodeResource(this.getContext().getResources(), R.mipmap.loca, options);
 
         paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(strokeWidth * 2);
+        paint.setStrokeWidth(strokeWidth);
+
         paint.setTextSize(40);
 
         RefreshMap rm = new RefreshMap(this);
         rm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
 
-        // TODO: Beispiel Array Liste mit IDs der Knotenpunkte
-        ArrayList ids = new ArrayList();
-        ids.add(0,1);
-        ids.add(1,3);
-        ids.add(2,2);
-        ids.add(3,7);
-        ids.add(4,8);
-        points = new PointF[ids.size()];
-        for (int i=0;i<ids.size();i++){
-            points[i] = Queries.getInstance(getContext()).searchNode(ids.get(i).toString());
-        }
     }
 
     @Override
@@ -76,16 +75,76 @@ public class Map extends SubsamplingScaleImageView {
         if (!isReady())
             return;
 
+
         PointF sLeft = Location.getPositionOnMap();
+        sLeft.x -= 15;
+        sLeft.y -= 15;
         PointF vCenter = sourceToViewCoord(sLeft);
-        vCenter.x = vCenter.x - icon.getWidth() / 2;
-        vCenter.y = vCenter.y - icon.getHeight() / 2;
 
-        c.drawBitmap(icon, vCenter.x, vCenter.y, paint);
+        //c.drawCircle(vCenter.x, vCenter.y, 30, paint);
 
+        Log.i("Angle:", angle+"");
+        paint.setColor(Color.BLACK);
+        double x=vCenter.x;
+        double y=vCenter.y;
+        c.drawCircle(Float.valueOf(x+""),Float.valueOf(y+""),40, paint);
+        paint.setColor(Color.RED);
+
+        double endX   = x - 20 * Math.sin(Math.toRadians(angle));
+        double endY   = y - 20 * Math.cos(Math.toRadians(angle));
+        c.drawLine(Float.valueOf(x+""),Float.valueOf(y+""),Float.valueOf(endX+""),Float.valueOf(endY+""), paint);
+
+
+        points = didReachPoint();
+        if (points==null || points.length == 0)
+            exitNavigation();
+        if(navigationRunning)
         drawRoute(c, points);
+
+
+    }
+    public void startNavigation(ArrayList<Ort> ids)
+    {
+        points = new PointF[ids.size()];
+        for (int i = 0; i < ids.size(); i++) {
+            points[i] = Queries.getInstance(getContext()).searchNode(""+ids.get(i).getID());
+        }
+        navigationRunning=true;
     }
 
+    public void setBackground(ImageSource s)
+    {
+        this.setImage(s);
+    }
+    private void exitNavigation()
+    {
+        navigationRunning=false;
+    }
+    public void setAngle(float angle)
+    {
+        this.lastAngle=this.angle;
+        this.angle=angle;
+    }
+    private PointF[] didReachPoint()
+    {
+        if(points==null ||points.length==0)
+            return points;
+        int cut = -1;
+        for(int i=0; i<points.length; i++) {
+            PointF pointF = points[i];
+            if (Location.getPositionOnMap().x - radiusReached < pointF.x && Location.getPositionOnMap().x + radiusReached > pointF.x && Location.getPositionOnMap().y - radiusReached < pointF.y && Location.getPositionOnMap().y + radiusReached > pointF.y)
+            {
+                cut = i;
+                break;
+            }
+        }
+        PointF[] newPoints = new PointF[cut];
+        for(int i=0; i<newPoints.length; i++)
+        {
+            newPoints[i] = points[i];
+        }
+        return newPoints;
+    }
     private void drawRoute(Canvas c, PointF[] points) {
         PointF points2[] = new PointF[points.length];
         for(int i=0;i<points.length;i++){
@@ -126,7 +185,7 @@ public class Map extends SubsamplingScaleImageView {
         @Override
         protected String doInBackground(String... params) {
             while (Map.run) {
-                if (layer != Location.getLayer() || Synchronize.updated) {
+             if (layer != Location.getLayer() || Synchronize.updated) {
                     Synchronize.updated = false;
                     layer = Location.getLayer();
                     publishProgress(1);
@@ -134,7 +193,7 @@ public class Map extends SubsamplingScaleImageView {
                 publishProgress(0);
 
                 try {
-                    Thread.sleep(1500);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

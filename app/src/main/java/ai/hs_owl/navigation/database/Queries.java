@@ -73,8 +73,8 @@ public class Queries {
         Log.i("Query", "INSERT INTO " + Database.BEACONS_TABLE_NAME + "(" + Database.BEACONS_COLUMN_ID + ", " + Database.BEACONS_COLUMN_X + ", " + Database.BEACONS_COLUMN_Y + ", " + Database.BEACONS_COLUMN_EBENE + ") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ")");
         db.getWritableDatabase().execSQL("INSERT INTO " + Database.BEACONS_TABLE_NAME + "(" + Database.BEACONS_COLUMN_ID + ", " + Database.BEACONS_COLUMN_X + ", " + Database.BEACONS_COLUMN_Y + ", " + Database.BEACONS_COLUMN_EBENE + ") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ")");
     }
-    public void insertNewKnot(String id, float x, float y, int ebene, String name) {
-        db.getWritableDatabase().execSQL("INSERT INTO " + Database.KNOTEN_TABLE_NAME + "(" + Database.KNOTEN_COLUMN_ID + ", " + Database.KNOTEN_COLUMN_X + ", " + Database.KNOTEN_COLUMN_Y + ", " + Database.KNOTEN_COLUMN_EBENE + ", "+ Database.KNOTEN_COLUMN_BESCHREIBUNG +") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ", '"+name+"')");
+    public void insertNewKnot(String id, float x, float y, int ebene,int fav, String name) {
+        db.getWritableDatabase().execSQL("INSERT INTO " + Database.KNOTEN_TABLE_NAME + "(" + Database.KNOTEN_COLUMN_ID + ", " + Database.KNOTEN_COLUMN_X + ", " + Database.KNOTEN_COLUMN_Y + ", " + Database.KNOTEN_COLUMN_EBENE + ", "+ Database.KNOTEN_COLUMN_BESCHREIBUNG +", "+Database.KNOTEN_COLUMN_FAV+") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ",'"+name+"', "+fav+")");
     }
     public void insertNewConnection(int idA, int idB, double gewicht) {
         gewicht *=10;

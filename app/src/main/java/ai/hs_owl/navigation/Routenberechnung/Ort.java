@@ -63,5 +63,9 @@ public class Ort {
 		this.weglaenge = weglaenge;
 
 	}
+	public int getID()
+	{
+		return name;
+	}
 
 }

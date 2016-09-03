@@ -126,7 +126,6 @@ public class AltBeacon implements BeaconConsumer {
 
                         if (Queries.getInstance(c).hasBeacon(beaconList.get(i).getId1().toUuid().toString().toUpperCase().replaceAll("-", "")))
                         {
-                            Log.i("Used Beacon:", beaconList.get(i).getId1().toUuid().toString().toUpperCase().replaceAll("-",""));
                             beacon_positions[i] = Queries.getInstance(c).getPositionOfBeacon(beaconList.get(i).getId1().toUuid().toString().toUpperCase().replaceAll("-", ""));
                         }
                         else {
