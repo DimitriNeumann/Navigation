@@ -173,9 +173,10 @@ public class Navigation extends Fragment {
             
         });
     }
-    /*
+    /**
+    * @param root Der Context, welche die Buttons und den Switch beinhaltet
     * Initilialisiert die Buttons zum Wechseln der Ebene, zum Beenden der Navigation und den Switch zur Kontrolle der Ortung
-    * **/
+    * */
     private void initializeControlls(View root)
     {
         final Switch aSwitch = (Switch) root.findViewById(R.id.switch1);
@@ -220,9 +221,9 @@ public class Navigation extends Fragment {
             }
         });
     }
-    /*
+    /**
     * Öffnet die Favoriten und zeigt diese in der Liste an. Startet die Navigation zu diesen Orten beim Klicken
-    * **/
+    * */
     private void showFavorites()
     {
         results = Queries.getInstance(this.getContext()).getFavorites();
@@ -262,10 +263,11 @@ public class Navigation extends Fragment {
         else
             b.setVisibility(View.GONE);
     }
-    /*
+    /**
+     * @param text Der Suchtext
     * Sucht die passenden Knoten aus der Datenbank raus und zeigt die Ergebnisse in der Liste an
     * Startet beim Klickena auf einen Knoten die Navigation an dieses Ort
-    * **/
+    * */
     private void performSearch(String text)
     {
         // hole Ergebnisse

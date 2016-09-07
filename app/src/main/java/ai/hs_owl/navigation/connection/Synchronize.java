@@ -92,7 +92,10 @@ public class Synchronize {
         }
         return true;
     }
-
+    /**
+     * @param folder Der Ordner, welche mit seinem Inhalt gelöscht werden soll
+     * Löscht den Ordner für die Dateien vollständig
+     * */
     private static void deleteFolders(File folder) {
         File[] files = folder.listFiles();
         if (files != null) { //some JVMs return null for empty dirs
@@ -106,7 +109,9 @@ public class Synchronize {
         }
         folder.delete();
     }
-
+    /**
+     * Erstellt den Ordner neu
+     * */
     private static void createFolders() {
         File f = new File(rootpath);
         if (!f.exists())

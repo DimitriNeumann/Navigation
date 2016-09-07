@@ -18,7 +18,10 @@ public class Location {
     public static int getLayer() {
         return layer;
     }
-
+    /**
+     * @return PointF die Position auf der Karte
+     * Gibt die Position auf der Karte zurück, korrigiert die Werte
+     * */
     public static PointF getPositionOnMap() {
         if (position == null) {
             position = new PointF(0,0);

@@ -35,7 +35,7 @@ public class Map extends SubsamplingScaleImageView  implements AltBeacon.Locatio
     public int strokeWidth;
     Paint paint;
 
-    // Manuelles Betrachten
+    //Manuelles Betrachten
     int manualLayer;
     //Navigation
     PointF points[];
@@ -56,6 +56,11 @@ public class Map extends SubsamplingScaleImageView  implements AltBeacon.Locatio
         super(context, attributeSet);
     }
 
+    /**
+     * @param f Das Parent Fragment
+     *
+     * Bestimmt und berechnet die Werte, welche zum Zeichnen benötigt werden
+     * */
     public void initialize(Navigation f) {
         this.n = f;
         this.activity = f.getActivity();
@@ -76,7 +81,11 @@ public class Map extends SubsamplingScaleImageView  implements AltBeacon.Locatio
 
 
     }
-
+    /**
+     * @param c Der Canvas, auf dem gezeichnet wird
+     *
+     * Zeichnet die Position und die Route auf die Karte
+     * */
     @Override
     public void onDraw(Canvas c) {
         super.onDraw(c);
@@ -113,6 +122,10 @@ public class Map extends SubsamplingScaleImageView  implements AltBeacon.Locatio
 
 
     }
+    /**
+     * @param s Wenn Positiv wird die Ebene nach oben gewechselt, sonst nach unten.
+     *  Welchselt das Layer eine Ebene nach oben oder nach unten und setzt die Bildquelle
+     * */
     public void changeLayer(int s)
     {
         ImageSource imageSource;
@@ -133,7 +146,12 @@ public class Map extends SubsamplingScaleImageView  implements AltBeacon.Locatio
 
     }
 
-    //Navigation
+    //Navigationsteil
+
+    /**
+     * @param ids Die IDS der Knotenpunkte, welche auf die Karte gezeichnet werden sollen
+     * Startet die Navigation, füllt die Array points mit Koordinaten zum zeichnen
+     * */
     public void startNavigation(ArrayList<Integer> ids)
     {
 
@@ -144,13 +162,19 @@ public class Map extends SubsamplingScaleImageView  implements AltBeacon.Locatio
         navigationRunning=true;
     }
 
-
+    /**
+     * Beendet die Navigation
+     * */
     public void exitNavigation()
     {
         n.showNavigationButton(false);
         navigationRunning=false;
     }
-
+    /**
+     *
+     * @return PointF[] die neue Route
+     * Kürzt die Route auf die Punkte, die noch nicht abgegangen wurden
+     * */
     private PointF[] didReachPoint()
     {
         if(points==null ||points.length==0)
@@ -173,6 +197,11 @@ public class Map extends SubsamplingScaleImageView  implements AltBeacon.Locatio
         }
         return newPoints;
     }
+    /**
+     * @param c Der Canvas, auf dem Route gezeichnet wird
+     * @param points Die Array aus Punkten, auf denen gezeichnet wird
+     * Zeichnet die Route
+     * */
     private void drawRoute(Canvas c, PointF[] points) {
         PointF points2[] = new PointF[points.length];
         for(int i=0;i<points.length;i++){
@@ -201,7 +230,10 @@ public class Map extends SubsamplingScaleImageView  implements AltBeacon.Locatio
         }
         c.drawLines(pts, paint);
     }
-
+    /**
+     * Handler Methode, wird von AltBeacon aufgerufen, wenn eine neue Position errechnet wurde
+     * Ändert evtl. die Ebene und zeichnet neu.
+     * */
     @Override
     public void newPositioncalculated() {
         activity.runOnUiThread(new Runnable() {

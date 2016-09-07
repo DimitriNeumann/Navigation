@@ -18,10 +18,12 @@ import java.net.URLConnection;
 public class Download {
     static boolean isLoading = false;
 
-    /*
+    /**
+    * @param c Der Context, auf der Dialog angezeigt wird
+     * @param callback Der Handler, an dem ein Signal nach fertigstellen gesendet wird
+     * @param url Die Liste der URLs, jede Datei hat eine eigene URL
     * Startet den Download, gibt ein Signal an den DownloadHandler weiter, wenn der Download abgeschlossen ist
-    *
-    * **/
+    * */
     public static void startDownload(Context c, Synchronize.DownloadHandler callback, String... url) {
 
         if (isLoading)
@@ -41,7 +43,9 @@ public class Download {
 
 
     }
-
+    /**
+     * Der AsyncTask, welcher die Downloads ausführt, Netzwerkoperationen dürfen nicht im Mainthread erfolgen
+     * */
     private static class DownloadFileFromURL extends AsyncTask<String, String, Boolean> {
         ProgressDialog pDialog;
         Synchronize.DownloadHandler callback;

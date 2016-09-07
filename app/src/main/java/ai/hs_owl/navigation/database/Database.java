@@ -41,7 +41,10 @@ public class Database extends SQLiteOpenHelper {
     public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-
+    /**
+     * @param db Die Datenbank, welche erstellt werden soll
+     * Erstellt die Datenbank
+     * */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(BEACONS_TABLE_CREATE);
@@ -53,7 +56,12 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(VERBINDUNGEN_TABLE_CREATE);
         Log.i("Table", VERBINDUNGEN_TABLE_CREATE);
     }
-
+    /**
+     * @param db Die Datenbank, auf die die Änderungen angewandt werden
+     * @param oldVersion Die alte Version der DB
+     * @param newVersion Die neue Version der DB
+     * Löscht die Tabellen und erstellt sie anschließend neu
+     * */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Löschen der alten Tabellen

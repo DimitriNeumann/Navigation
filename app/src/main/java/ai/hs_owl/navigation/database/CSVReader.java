@@ -12,6 +12,12 @@ import java.util.Scanner;
  * Unterstützt keine Escape Zeichen oder ähnliches.
  */
 public class CSVReader {
+    /**
+     * @return String[][] die Ergebniss Array
+     * @param path Der Pfad zur CSV Datei
+     * @param max Die Maximale Anzahl an Spalten pro Zeile, eine geringere Anzahl wird mit null gefüllt
+     * Gibt die Tabelle in Form einer zweidimmensionalen Array wieder
+     * */
     public static String[][] read(String path, int max) {
         try {
             Scanner scan = new Scanner(new FileReader(path));
