@@ -8,14 +8,13 @@ import java.util.ArrayList;
 
 
 public class Dijkstra {
-	static ArrayList  besuchteOrte;
+	static ArrayList<Integer>  besuchteOrte;
 
 
 	public static ArrayList calculate(int start, int ziel, Context c) throws Exception {
 
 		Landkarte landkarte = Landkarte.initGraph(c);
 
-		//int startOrt = InputOld.inputInt("Startort (A-Z):");
 		int startOrt = start;
 		
 		landkarte.getOrt(startOrt).setzeVorgaenger('\u0000');
@@ -34,13 +33,10 @@ public class Dijkstra {
 
 			}
 
-			// System.out.println("Debug in top(): minOrt besucht: " + minOrt);
 
 		}
 
-		// ende: Ausgabe
 
-//		int zielOrt = InputOld.inputInt("Zielort (A-Z): ");
 		int zielOrt = ziel;
 		
 		int weglaenge = landkarte.liesWegLaenge(zielOrt);
@@ -52,11 +48,9 @@ public class Dijkstra {
 
 	private static void ausgabeAlleWege(Landkarte landkarte, int startOrt, int zielOrt, int weglaenge) {
 
-	//	System.out.println("Die Wegl�nge von " + startOrt + " zu " + zielOrt + " betr�gt " + weglaenge + ".");
 
 		Ort o = landkarte.getOrt(zielOrt);
 
-		//System.out.println("Unterwegs wurden besucht: ");
 
 		besuchteOrte= new ArrayList<>();
 		
@@ -68,9 +62,7 @@ public class Dijkstra {
 
 		}
 
-	//	System.out.println(startOrt);
 		besuchteOrte.add(startOrt);
-	//	System.out.println(besuchteOrte);
 
 	}
 

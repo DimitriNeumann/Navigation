@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Created by mberg on 12.05.2016.
+ * Eine einfache Klasse, welche CSV Dateien einliest und anhand des semikolons trennt.
+ * Unterstützt keine Escape Zeichen oder ähnliches.
  */
 public class CSVReader {
     public static String[][] read(String path, int max) {
@@ -22,7 +23,6 @@ public class CSVReader {
             String[][] data = new String[lines.size()][max];
             for (int i = 0; i < data.length; i++) {
                 data[i] = lines.get(i).split(";");
-                Log.i("Data:", lines.get(i).split(";").length+"");
             }
             return data;
         } catch (FileNotFoundException e) {

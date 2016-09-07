@@ -4,7 +4,8 @@ import android.graphics.PointF;
 import android.util.Log;
 
 /**
- * Created by mberg on 10.05.2016.
+ * Diese statische Klasse speichert die Position auf der Karte und die Ebene der Karte.
+ * Die Werte werden von AltBeacon gesetzt und von Map gelesen.
  */
 public class Location {
     static PointF position;
@@ -20,8 +21,7 @@ public class Location {
 
     public static PointF getPositionOnMap() {
         if (position == null) {
-            Log.i("Position", "is null");
-            position = new PointF(512, 512);
+            position = new PointF(0,0);
         }
         return new PointF(position.x/2F, position.y/2F);
     }

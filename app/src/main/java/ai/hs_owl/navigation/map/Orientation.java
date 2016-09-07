@@ -5,25 +5,15 @@ package ai.hs_owl.navigation.map;
  */
 
         import android.content.Context;
-        import android.database.DataSetObservable;
         import android.hardware.Sensor;
         import android.hardware.SensorEvent;
         import android.hardware.SensorEventListener;
         import android.hardware.SensorManager;
-        import android.location.Location;
-        import android.location.LocationListener;
-        import android.location.LocationManager;
-        import android.os.Bundle;
-        import android.util.Log;
-        import android.view.animation.RotateAnimation;
-        import android.widget.Toast;
 
-        import java.util.Calendar;
-        import java.util.Date;
 
 
 /**
- * Liest die Sensor und GPS Daten aus und gibt diese im DataHandler wieder
+ * Liest die Sensor Daten aus und gibt diese im DataHandler wieder
  */
 public class Orientation {
 

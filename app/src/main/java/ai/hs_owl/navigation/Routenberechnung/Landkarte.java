@@ -19,7 +19,6 @@ import ai.hs_owl.navigation.datastructures.Verbindung;
 
 public class Landkarte {
 
-//	public static String CSV_FILE_NAME = "verbindungen.csv";
 
 	Map<Integer, Ort> ortMenge = new HashMap<Integer, Ort>();
 
@@ -40,36 +39,6 @@ public class Landkarte {
 
 			l.ortMenge.get(ortB).addWeg(ortA, gewicht);
 		}
-
-//		Landkarte l = new Landkarte();
-//
-//		FileReader fr = new FileReader(CSV_FILE_NAME);
-//
-//		String line = null;
-//
-//		BufferedReader br = new BufferedReader(fr);
-//
-//		while (null != (line = br.readLine())) {
-//
-//			String[] args = line.split(",");
-//
-//			int ortA = Integer.valueOf(args[0]);
-//
-//			int ortB = Integer.valueOf(args[1]);
-//
-//			int abst = Integer.parseInt(args[2].trim());
-//
-//			ensureOrt(l, ortA);
-//
-//			ensureOrt(l, ortB);
-//
-//			l.ortMenge.get(ortA).addWeg(ortB, abst);
-//
-//			l.ortMenge.get(ortB).addWeg(ortA, abst);
-//
-//		}
-//
-//		br.close();
 
 		return l;
 

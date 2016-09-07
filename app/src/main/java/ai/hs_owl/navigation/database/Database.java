@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
- * Created by mberg on 10.05.2016.
+ * Erstellt die Datenbank, enthält Konstanten für alle Tabellen, löscht diese und erstellt sie neu, wenn eine neue Datenbank Version gesetzt ist.
  */
 public class Database extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 11;

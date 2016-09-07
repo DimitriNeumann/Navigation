@@ -37,8 +37,12 @@ import ai.hs_owl.navigation.map.LayerManager;
 import ai.hs_owl.navigation.map.Location;
 import ai.hs_owl.navigation.map.Map;
 import ai.hs_owl.navigation.map.Orientation;
-
+/**
+ * Stellt ein gefülltes Fragment dar, welches einfach in die Haupt Applikation eingesetzt werden kann.
+ * Dabei wird hauptsächlich die Karte verwaltet, und die Suche ausgeführt.
+ * */
 public class Navigation extends Fragment {
+
     Map map;
     private static final int REQUEST_BLUETOOTH_ENABLE = 1;
     Knoten[] results;
@@ -58,14 +62,16 @@ public class Navigation extends Fragment {
         map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Versteckt die Liste der Ergebnisse, wenn auf die Karte geklickt wird.
                 root.findViewById(R.id.listView).setVisibility(View.GONE);
             }
         });
-        map.initialize();
-        map.setBackground(ImageSource.resource(R.mipmap.gridblack));
+        map.initialize(this);
+        map.changeLayer(+1);
+
         //Ortung
-        altBeacon = new AltBeacon(Navigation.this.getContext());
-        checkBluetooth();
+        altBeacon = new AltBeacon(Navigation.this.getContext(), map);
+
         // Suchfeld und Kontrollfelder
         initializeEditText(root);
         initializeControlls(root);
@@ -74,25 +80,29 @@ public class Navigation extends Fragment {
 
         return root;
     }
+    /**
+     * Aktiviert die Ortung beim erneuten aufrufen
+     * Überprüft, ob Synchronisiert werden muss
+     * Startet die Orientierungsberechnung
+     * */
     @Override
     public void onResume()
     {
         super.onResume();
-        altBeacon.start();
+        ((Switch) getView().findViewById(R.id.switch1)).setChecked(true);
         if(Synchronize.syncNeeded(this.getContext())) {
             Log.i("SyncNeeded", true+"");
-            Synchronize.sync(this.getContext());
+            Synchronize.sync(this.getContext(), map);
         }
-        else
-        {
-            map.setBackground(LayerManager.getImageSource(1));
-        }
+
         orientation.getOrientation(new Orientation.DataHandler() {
             @Override
             public void receiveData(float o) {
-                map.setAngle((float) o);
+                map.setAngle(o);
             }
         });
+        if(checkBluetooth())
+            altBeacon.start();
 
     }
     @Override
@@ -102,23 +112,27 @@ public class Navigation extends Fragment {
         orientation.stop();
         altBeacon.stop();
     }
+    /*
+    * Wird aufgerufen, wenn die Bluetooth Anfrage gesetzt wurde
+    * **/
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_BLUETOOTH_ENABLE) {
             if (resultCode == Activity.RESULT_OK) {
+                final Switch aSwitch = (Switch) getView().findViewById(R.id.switch1);
+                aSwitch.setChecked(true);
             }
         }
     }
 
-
+    /**
+     * @return boolean true wenn Bluetooth eingeschaltet ist, sonst false
+     * */
     public boolean checkBluetooth() {
         // Check Bluetooth every time
         BluetoothManager bluetoothManager = (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         BluetoothAdapter mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        // Filter based on default easiBeacon UUID, remove if not required
-        //_ibp.setScanUUID(UUID here);
 
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -127,6 +141,9 @@ public class Navigation extends Fragment {
         }
         return true;
     }
+    /*
+    * Initialisiert die Such Eingabe, öffnet die Liste der Favoriten beim Klicken
+    * **/
     private void initializeEditText(View v)
     {
         final ListView listView = (ListView) v.findViewById(R.id.listView);
@@ -151,19 +168,25 @@ public class Navigation extends Fragment {
             }
         });
     }
+    /*
+    * Initilialisiert die Buttons zum Wechseln der Ebene, zum Beenden der Navigation und den Switch zur Kontrolle der Ortung
+    * **/
     private void initializeControlls(View root)
     {
         final Switch aSwitch = (Switch) root.findViewById(R.id.switch1);
         Button up = (Button) root.findViewById(R.id.button2);
         Button down = (Button) root.findViewById(R.id.button);
-
+        Button exit = (Button) root.findViewById(R.id.button3);
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b)
+                if(b) {
                     altBeacon.start();
+                }
                 else
+                {
                     altBeacon.stop();
+                }
             }
         });
         up.setOnClickListener(new View.OnClickListener() {
@@ -171,7 +194,7 @@ public class Navigation extends Fragment {
             public void onClick(View view) {
                 aSwitch.setChecked(false);
                 altBeacon.stop();
-                map.setBackground(LayerManager.up());
+                map.changeLayer(1);
                 
             }
         });
@@ -180,30 +203,64 @@ public class Navigation extends Fragment {
             public void onClick(View view) {
                 aSwitch.setChecked(false);
                 altBeacon.stop();
-                map.setBackground(LayerManager.down());
+                map.changeLayer(-1);
 
 
             }
         });
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map.exitNavigation();
+            }
+        });
     }
+    /*
+    * Öffnet die Favoriten und zeigt diese in der Liste an. Startet die Navigation zu diesen Orten beim Klicken
+    * **/
     private void showFavorites()
     {
-        String[] show = new String[3];
-        show[0] = "Bibliothek";
-        show[1] = "Mensa";
-        show[2] = "Prüfungsamt";
+        results = Queries.getInstance(this.getContext()).getFavorites();
+        String[] show = new String[results.length];
+        for(int i=0; i<results.length; i++) {
+            show[i] = results[i].getBeschreibung();
+        }
+
         final ListView listView = (ListView) getView().findViewById(R.id.listView);
         ArrayAdapter arrayAdapter = new ArrayAdapter(this.getContext(), android.R.layout.simple_list_item_1, show);
         listView.setAdapter(arrayAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(Navigation.this.getContext(), (String)parent.getItemAtPosition(position), Toast.LENGTH_SHORT).show();
+                try {
+                    int start = Queries.getInstance(Navigation.this.getContext()).getNearestKnot(Location.getPositionOnMap());
+
+                    ArrayList<Integer> weg = Dijkstra.calculate (start, results[position].getId(), Navigation.this.getContext());
+                    map.startNavigation(weg);
+                    showNavigationButton(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(Navigation.this.getContext(), "Fehler bei der Berechnung", Toast.LENGTH_SHORT).show();
+                }
+
+
                 final ListView listView = (ListView) Navigation.this.getView().findViewById(R.id.listView);
                 listView.setVisibility(View.GONE);
             }
         });
     }
+    public void showNavigationButton(boolean show)
+    {
+        Button b = (Button) getView().findViewById(R.id.button3);
+        if(show)
+            b.setVisibility(View.VISIBLE);
+        else
+            b.setVisibility(View.GONE);
+    }
+    /*
+    * Sucht die passenden Knoten aus der Datenbank raus und zeigt die Ergebnisse in der Liste an
+    * Startet beim Klickena auf einen Knoten die Navigation an dieses Ort
+    * **/
     private void performSearch(String text)
     {
         // hole Ergebnisse
@@ -221,8 +278,10 @@ public class Navigation extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
-                    ArrayList<Ort> weg = Dijkstra.calculate (Queries.getInstance(Navigation.this.getContext()).getNearestKnot(Location.getPositionOnMap()), results[position].getId(), Navigation.this.getContext());
+                    ArrayList<Integer> weg = Dijkstra.calculate (Queries.getInstance(Navigation.this.getContext()).getNearestKnot(Location.getPositionOnMap()), results[position].getId(), Navigation.this.getContext());
                     map.startNavigation(weg);
+                    showNavigationButton(true);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(Navigation.this.getContext(), "Fehler bei der Berechnung", Toast.LENGTH_SHORT).show();

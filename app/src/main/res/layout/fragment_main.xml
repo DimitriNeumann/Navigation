@@ -8,7 +8,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Navigation"
     tools:showIn="@layout/activity_main"
-    android:padding="0dp">
+    android:padding="0dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -100,6 +102,16 @@
                 android:id="@+id/button2"
                 android:layout_above="@+id/button"
                 android:layout_alignParentEnd="true" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Beenden"
+                android:id="@+id/button3"
+                android:layout_alignParentBottom="true"
+                android:layout_toStartOf="@+id/button"
+                android:visibility="gone" />
 
         </RelativeLayout>
     </FrameLayout>

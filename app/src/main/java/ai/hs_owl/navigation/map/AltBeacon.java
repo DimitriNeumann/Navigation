@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.PointF;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -24,15 +26,22 @@ import java.util.Map;
 import ai.hs_owl.navigation.database.Queries;
 
 /**
- * Created by marvinberger on 24.06.16.
+ * Diese Klassen benutzt die AltBeacon API und scannt, wenn gestartet, nach neuen Beacons und berechnet direkt die Position des Smartphones.
  */
 public class AltBeacon implements BeaconConsumer {
     private BeaconManager beaconManager;
     private Context c;
+    private LocationHandler handler;
 
-    private boolean scanning = false;
+    public static boolean scanning = false;
 
-    public AltBeacon(Context c) {
+    public interface LocationHandler
+    {
+        void newPositioncalculated();
+    }
+
+    public AltBeacon(Context c, LocationHandler handler) {
+        this.handler = handler;
         this.c = c;
         beaconManager = BeaconManager.getInstanceForApplication(c); // wird benötigt, wenn der BeaconConsumer außerhalb einer Activity aufgebaut wird
 
@@ -102,7 +111,6 @@ public class AltBeacon implements BeaconConsumer {
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
 
 
-                Log.v("Beacon Size:", beacons.size() + "");
 
 
                 if (beacons.size() >= 3) {
@@ -139,6 +147,9 @@ public class AltBeacon implements BeaconConsumer {
                     Location.setLayer(getLayerFromBeacons(beacon_positions));
                     // Position berechnen und übergeben
                     Location.setPosition(calcXYPos(beacon_positions[0][0], beacon_positions[0][1], beacon_positions[1][0], beacon_positions[1][1], beacon_positions[2][0], beacon_positions[2][1], beaconList.get(0).getDistance(), beaconList.get(1).getDistance(), beaconList.get(2).getDistance()));
+
+                     handler.newPositioncalculated();
+
 
 
                 }
@@ -191,7 +202,6 @@ public class AltBeacon implements BeaconConsumer {
         double T = (Math.pow(x_1, 2) - Math.pow(x_2, 2) + Math.pow(y_1, 2) - Math.pow(y_2, 2) + Math.pow(d_2, 2) - Math.pow(d_1, 2.)) / 2.0;
         y = ((T * (x_2 - x_3)) - (S * (x_2 - x_1))) / (((y_1 - y_2) * (x_2 - x_3)) - ((y_3 - y_2) * (x_2 - x_1)));
         x = ((y * (y_1 - y_2)) - T) / (x_2 - x_1);
-        Log.i("AltBeacon", "Calculated Position" + x + "," + y);
         return new PointF((float) x, (float) y);
     }
 

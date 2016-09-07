@@ -1,5 +1,7 @@
 package ai.hs_owl.navigation.map;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,27 +20,34 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.util.ArrayList;
 
+import ai.hs_owl.navigation.Navigation;
 import ai.hs_owl.navigation.R;
 import ai.hs_owl.navigation.Routenberechnung.Ort;
 import ai.hs_owl.navigation.connection.Synchronize;
 import ai.hs_owl.navigation.database.Queries;
 
 /**
- * Created by mberg on 22.04.2016.
+ * Eine abgewandelte Form der Klasse SubsamplingScaleView.
+ * Zeigt die Kartendaten an, zeichnet die Position mit Ausrichtung auf die Karte
+ * Wird bei einer neuen Position automatisch aktualisiert
  */
-public class Map extends SubsamplingScaleImageView {
-    public static boolean run = true;
+public class Map extends SubsamplingScaleImageView  implements AltBeacon.LocationHandler{
     public int strokeWidth;
-    Bitmap icon;
     Paint paint;
 
+    // Manuelles Betrachten
+    int manualLayer;
     //Navigation
     PointF points[];
     boolean navigationRunning = false;
     private static int radiusReached = 30;
+    Activity activity;
+    Navigation n;
     //Winkel
     float angle=-1;
-    static float lastAngle=0;
+
+    int lastLayer=0;
+
     public Map(Context context) {
         super(context);
     }
@@ -47,8 +56,9 @@ public class Map extends SubsamplingScaleImageView {
         super(context, attributeSet);
     }
 
-    public void initialize() {
-        Log.i("Init", true+"");
+    public void initialize(Navigation f) {
+        this.n = f;
+        this.activity = f.getActivity();
         setWillNotDraw(false);
 
         float density = getResources().getDisplayMetrics().densityDpi;
@@ -56,7 +66,6 @@ public class Map extends SubsamplingScaleImageView {
         setMinimumScaleType(SCALE_TYPE_CENTER_CROP);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
-        //icon = BitmapFactory.decodeResource(this.getContext().getResources(), R.mipmap.loca, options);
 
         paint = new Paint();
         paint.setAntiAlias(true);
@@ -64,8 +73,7 @@ public class Map extends SubsamplingScaleImageView {
 
         paint.setTextSize(40);
 
-        RefreshMap rm = new RefreshMap(this);
-        rm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+
 
     }
 
@@ -75,56 +83,74 @@ public class Map extends SubsamplingScaleImageView {
         if (!isReady())
             return;
 
+        // Position wird nur angezeigt, wenn die Ebene die richtige ist bzw. nicht manuell betrachtet wird
+        if(this.lastLayer==manualLayer){
+            PointF sLeft = Location.getPositionOnMap();
+            sLeft.x -= 15;
+            sLeft.y -= 15;
+            PointF vCenter = sourceToViewCoord(sLeft);
+            // Zeichne die Position in die Mitte zentriert
+            paint.setColor(Color.BLACK);
+            double x = vCenter.x;
+            double y = vCenter.y;
+            c.drawCircle(Float.valueOf(x + ""), Float.valueOf(y + ""), 30, paint);
+            paint.setColor(Color.RED);
+            // und die Linie, welche in Richtung Norden zeigt
+            double endX = x - 15 * Math.sin(Math.toRadians(angle));
+            double endY  = y - 15 * Math.cos(Math.toRadians(angle));
+            c.drawLine(Float.valueOf(x + ""), Float.valueOf(y + ""), Float.valueOf(endX + ""), Float.valueOf(endY + ""), paint);
 
-        PointF sLeft = Location.getPositionOnMap();
-        sLeft.x -= 15;
-        sLeft.y -= 15;
-        PointF vCenter = sourceToViewCoord(sLeft);
+        }
 
-        //c.drawCircle(vCenter.x, vCenter.y, 30, paint);
-
-        Log.i("Angle:", angle+"");
-        paint.setColor(Color.BLACK);
-        double x=vCenter.x;
-        double y=vCenter.y;
-        c.drawCircle(Float.valueOf(x+""),Float.valueOf(y+""),40, paint);
-        paint.setColor(Color.RED);
-
-        double endX   = x - 20 * Math.sin(Math.toRadians(angle));
-        double endY   = y - 20 * Math.cos(Math.toRadians(angle));
-        c.drawLine(Float.valueOf(x+""),Float.valueOf(y+""),Float.valueOf(endX+""),Float.valueOf(endY+""), paint);
-
-
+        // wurde ein Punkt erreicht, welcher gelöscht werden kann?
         points = didReachPoint();
+        // wenn keine Punkte mehr vorhanden sind (--> Ziel erreicht oder Route nicht vorhanden) beenden der Route
         if (points==null || points.length == 0)
             exitNavigation();
+
         if(navigationRunning)
         drawRoute(c, points);
 
 
     }
-    public void startNavigation(ArrayList<Ort> ids)
+    public void changeLayer(int s)
     {
+        ImageSource imageSource;
+        if(s>0) {
+             imageSource= LayerManager.getImageSource(manualLayer = LayerManager.up(manualLayer));
+        }
+        else {
+            imageSource = LayerManager.getImageSource(manualLayer = LayerManager.down(manualLayer));
+        }
+        if(imageSource!=null)
+        this.setImage(imageSource);
+        invalidate();
+    }
+    public void setAngle(float angle)
+    {
+        this.angle=angle;
+        invalidate();
+
+    }
+
+    //Navigation
+    public void startNavigation(ArrayList<Integer> ids)
+    {
+
         points = new PointF[ids.size()];
         for (int i = 0; i < ids.size(); i++) {
-            points[i] = Queries.getInstance(getContext()).searchNode(""+ids.get(i).getID());
+            points[i] = Queries.getInstance(getContext()).searchNode(""+ids.get(i));
         }
         navigationRunning=true;
     }
 
-    public void setBackground(ImageSource s)
+
+    public void exitNavigation()
     {
-        this.setImage(s);
-    }
-    private void exitNavigation()
-    {
+        n.showNavigationButton(false);
         navigationRunning=false;
     }
-    public void setAngle(float angle)
-    {
-        this.lastAngle=this.angle;
-        this.angle=angle;
-    }
+
     private PointF[] didReachPoint()
     {
         if(points==null ||points.length==0)
@@ -138,6 +164,8 @@ public class Map extends SubsamplingScaleImageView {
                 break;
             }
         }
+        if(cut==-1)
+            return points;
         PointF[] newPoints = new PointF[cut];
         for(int i=0; i<newPoints.length; i++)
         {
@@ -174,47 +202,22 @@ public class Map extends SubsamplingScaleImageView {
         c.drawLines(pts, paint);
     }
 
-    private class RefreshMap extends AsyncTask<String, Integer, String> {
-        Map map;
-        int layer = -1;
-
-        public RefreshMap(Map m) {
-            map = m;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            while (Map.run) {
-             if (layer != Location.getLayer() || Synchronize.updated) {
-                    Synchronize.updated = false;
-                    layer = Location.getLayer();
-                    publishProgress(1);
+    @Override
+    public void newPositioncalculated() {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(Location.getLayer()!=lastLayer || Location.getLayer()!=manualLayer)
+                {
+                    manualLayer = Location.getLayer();
+                    lastLayer = Location.getLayer();
+                    setImage(LayerManager.getImageSource(lastLayer));
                 }
-                publishProgress(0);
-
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                invalidate();
             }
-            return null;
-        }
+        });
 
-        @Override
-        public void onProgressUpdate(Integer... progress) {
-            if (progress[0] == 1) {
-                Log.i("Location:", Location.getLayer() + "");
-                ImageSource image = LayerManager.getImageSource(Location.getLayer());
-                if (image != null)
-                    map.setImage(image);
-                else
-                    Toast.makeText(map.getContext(), "Keine Daten vorhanden!", Toast.LENGTH_LONG).show();
-
-                map.invalidate();
-            } else if (progress[0] == 0)
-                map.invalidate();
-        }
     }
+
 
 }

@@ -54,7 +54,7 @@ public class Queries {
     {
         int id_smallest=-1;
         double distance=Double.MAX_VALUE;
-        Cursor c = db.getReadableDatabase().rawQuery("SELECT * FROM " + Database.BEACONS_TABLE_NAME, null);
+        Cursor c = db.getReadableDatabase().rawQuery("SELECT * FROM " + Database.KNOTEN_TABLE_NAME, null);
         c.moveToFirst();
         while(!c.isAfterLast())
         {
@@ -67,37 +67,27 @@ public class Queries {
         }
         return id_smallest;
     }
-
-    //Schreiben
-    public void insertNewBeacon(String id, float x, float y, int ebene) {
-        Log.i("Query", "INSERT INTO " + Database.BEACONS_TABLE_NAME + "(" + Database.BEACONS_COLUMN_ID + ", " + Database.BEACONS_COLUMN_X + ", " + Database.BEACONS_COLUMN_Y + ", " + Database.BEACONS_COLUMN_EBENE + ") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ")");
-        db.getWritableDatabase().execSQL("INSERT INTO " + Database.BEACONS_TABLE_NAME + "(" + Database.BEACONS_COLUMN_ID + ", " + Database.BEACONS_COLUMN_X + ", " + Database.BEACONS_COLUMN_Y + ", " + Database.BEACONS_COLUMN_EBENE + ") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ")");
-    }
-    public void insertNewKnot(String id, float x, float y, int ebene,int fav, String name) {
-        db.getWritableDatabase().execSQL("INSERT INTO " + Database.KNOTEN_TABLE_NAME + "(" + Database.KNOTEN_COLUMN_ID + ", " + Database.KNOTEN_COLUMN_X + ", " + Database.KNOTEN_COLUMN_Y + ", " + Database.KNOTEN_COLUMN_EBENE + ", "+ Database.KNOTEN_COLUMN_BESCHREIBUNG +", "+Database.KNOTEN_COLUMN_FAV+") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ",'"+name+"', "+fav+")");
-    }
-    public void insertNewConnection(int idA, int idB, double gewicht) {
-        gewicht *=10;
-        db.getWritableDatabase().execSQL("INSERT INTO " + Database.VERBINDUNGEN_TABLE_NAME + "(" + Database.VERBINDUNGEN_COLUMN_IDA + ", " + Database.VERBINDUNGEN_COLUMN_IDB + ", " + Database.VERBINDUNGEN_COLUMN_GEWICHT + ", " + Database.VERBINDUNGEN_COLUMN_OUTDOOR + ") VALUES(" + idA + ", " + idB + ", " + (int) gewicht+ ", 0)");
-    }
-
-
-    public void clearTable(String beaconsTableName) {
-        db.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + beaconsTableName);
-        if(Database.BEACONS_TABLE_CREATE.contains(beaconsTableName))
-            db.getWritableDatabase().execSQL(Database.BEACONS_TABLE_CREATE);
-        if(Database.KNOTEN_TABLE_CREATE.contains(beaconsTableName))
-            db.getWritableDatabase().execSQL(Database.KNOTEN_TABLE_CREATE);
-        if(Database.VERBINDUNGEN_TABLE_CREATE.contains(beaconsTableName))
-            db.getWritableDatabase().execSQL(Database.VERBINDUNGEN_TABLE_CREATE);
-    }
-
     public boolean hasBeacon(String id) {
         return (db.getReadableDatabase().rawQuery("SELECT * FROM " + Database.BEACONS_TABLE_NAME + " WHERE " + Database.BEACONS_COLUMN_ID + "='" + id + "'", null).getCount() > 0);
     }
-
+    public Knoten[] getFavorites()
+    {
+        Cursor cursor = db.getReadableDatabase().rawQuery("SELECT * FROM " + Database.KNOTEN_TABLE_NAME + " WHERE " + Database.KNOTEN_COLUMN_FAV +"=1", null);
+        cursor.moveToFirst();
+        if(cursor.getCount()==0)
+            return new Knoten[0];
+        Knoten[] knoten = new Knoten[cursor.getCount()];
+        int i=0;
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            knoten[i] = new Knoten(cursor.getInt(cursor.getColumnIndex(Database.KNOTEN_COLUMN_ID)),cursor.getInt(cursor.getColumnIndex(Database.KNOTEN_COLUMN_X)),cursor.getInt(cursor.getColumnIndex(Database.KNOTEN_COLUMN_Y)),cursor.getInt(cursor.getColumnIndex(Database.KNOTEN_COLUMN_EBENE)), cursor.getString(cursor.getColumnIndex(Database.KNOTEN_COLUMN_BESCHREIBUNG)) );
+            i++;
+            cursor.moveToNext();
+        }
+        return knoten;
+    }
     public Knoten[] searchKnots(String text) {
-        Cursor cursor = db.getReadableDatabase().rawQuery("SELECT * FROM " + Database.KNOTEN_TABLE_NAME + " WHERE " + Database.KNOTEN_COLUMN_BESCHREIBUNG + " LIKE '%"+text+"%' AND "+ Database.KNOTEN_COLUMN_BESCHREIBUNG + "!=''", null);
+        Cursor cursor = db.getReadableDatabase().rawQuery("SELECT * FROM " + Database.KNOTEN_TABLE_NAME + " WHERE " + Database.KNOTEN_COLUMN_BESCHREIBUNG + " LIKE '%"+text+"%' AND "+ Database.KNOTEN_COLUMN_BESCHREIBUNG + "!='' OR " + Database.KNOTEN_COLUMN_FAV +"=1 ORDER BY "+ Database.KNOTEN_COLUMN_FAV +" ASC", null);
         cursor.moveToFirst();
         if(cursor.getCount()==0)
             return new Knoten[0];
@@ -134,4 +124,29 @@ public class Queries {
         }
         return new PointF(0.0f,0.0f);
     }
+    //Schreiben
+    public void insertNewBeacon(String id, float x, float y, int ebene) {
+        Log.i("Query", "INSERT INTO " + Database.BEACONS_TABLE_NAME + "(" + Database.BEACONS_COLUMN_ID + ", " + Database.BEACONS_COLUMN_X + ", " + Database.BEACONS_COLUMN_Y + ", " + Database.BEACONS_COLUMN_EBENE + ") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ")");
+        db.getWritableDatabase().execSQL("INSERT INTO " + Database.BEACONS_TABLE_NAME + "(" + Database.BEACONS_COLUMN_ID + ", " + Database.BEACONS_COLUMN_X + ", " + Database.BEACONS_COLUMN_Y + ", " + Database.BEACONS_COLUMN_EBENE + ") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ")");
+    }
+    public void insertNewKnot(String id, float x, float y, int ebene,int fav, String name) {
+        db.getWritableDatabase().execSQL("INSERT INTO " + Database.KNOTEN_TABLE_NAME + "(" + Database.KNOTEN_COLUMN_ID + ", " + Database.KNOTEN_COLUMN_X + ", " + Database.KNOTEN_COLUMN_Y + ", " + Database.KNOTEN_COLUMN_EBENE + ", "+ Database.KNOTEN_COLUMN_BESCHREIBUNG +", "+Database.KNOTEN_COLUMN_FAV+") VALUES('" + id + "', " + x + ", " + y + ", " + ebene + ",'"+name+"', "+fav+")");
+    }
+    public void insertNewConnection(int idA, int idB, double gewicht) {
+        gewicht *=10;
+        db.getWritableDatabase().execSQL("INSERT INTO " + Database.VERBINDUNGEN_TABLE_NAME + "(" + Database.VERBINDUNGEN_COLUMN_IDA + ", " + Database.VERBINDUNGEN_COLUMN_IDB + ", " + Database.VERBINDUNGEN_COLUMN_GEWICHT + ", " + Database.VERBINDUNGEN_COLUMN_OUTDOOR + ") VALUES(" + idA + ", " + idB + ", " + (int) gewicht+ ", 0)");
+    }
+
+
+    public void clearTable(String beaconsTableName) {
+        db.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + beaconsTableName);
+        if(Database.BEACONS_TABLE_CREATE.contains(beaconsTableName))
+            db.getWritableDatabase().execSQL(Database.BEACONS_TABLE_CREATE);
+        if(Database.KNOTEN_TABLE_CREATE.contains(beaconsTableName))
+            db.getWritableDatabase().execSQL(Database.KNOTEN_TABLE_CREATE);
+        if(Database.VERBINDUNGEN_TABLE_CREATE.contains(beaconsTableName))
+            db.getWritableDatabase().execSQL(Database.VERBINDUNGEN_TABLE_CREATE);
+    }
+
+
 }

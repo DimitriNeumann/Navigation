@@ -1,7 +1,7 @@
 package ai.hs_owl.navigation.datastructures;
 
 /**
- * Created by mberg on 25.08.2016.
+ * Stellt eine einfache Datenstruktur für einen Knoten dar.
  */
 public class Knoten {
     private int id,x,y,ebene;

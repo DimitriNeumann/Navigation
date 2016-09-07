@@ -3,7 +3,9 @@ package ai.hs_owl.navigation;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
+/**
+ * Diese Activity wurde nur benötigt, damit die Navigation eingenständig getestet werden kann
+ * */
 public class MainActivity extends AppCompatActivity {
 
     @Override
