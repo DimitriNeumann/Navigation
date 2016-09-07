@@ -5,12 +5,14 @@ import android.content.Context;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-
+/* Diese Klasse berechnet die kürzeste Route.
+* Zurückgegeben wird eine ArrayList mit den besuchten Orten.
+* */
 
 public class Dijkstra {
 	static ArrayList<Integer>  besuchteOrte;
 
-
+//Start und Ziel werden übergeben.
 	public static ArrayList calculate(int start, int ziel, Context c) throws Exception {
 
 		Landkarte landkarte = Landkarte.initGraph(c);
@@ -46,6 +48,7 @@ public class Dijkstra {
 
 	}
 
+	// In dieser Methode werden alle besuchten Orte in einer ArrayList gespeichert.
 	private static void ausgabeAlleWege(Landkarte landkarte, int startOrt, int zielOrt, int weglaenge) {
 
 

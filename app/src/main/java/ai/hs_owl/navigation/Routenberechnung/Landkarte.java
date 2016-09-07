@@ -19,10 +19,11 @@ import ai.hs_owl.navigation.datastructures.Verbindung;
 
 public class Landkarte {
 
-
+//In dieser Klasse wird der Graph initialisiert.
 	Map<Integer, Ort> ortMenge = new HashMap<Integer, Ort>();
 
 	public static Landkarte initGraph(Context c) throws Exception {
+		//die Verbindungen werden aus der Datenbank in ein Array geladen.
 		Verbindung[] alleVerbindungen = Queries.getInstance(c).getVerbindungen();
 
 		Landkarte l = new Landkarte();
@@ -33,10 +34,12 @@ public class Landkarte {
 			int ortB = alleVerbindungen[i].getIdB();
 			int gewicht = alleVerbindungen[i].getGewicht();
 
+
 			ensureOrt(l, ortA);
 			ensureOrt(l, ortB);
-			l.ortMenge.get(ortA).addWeg(ortB, gewicht);
 
+			//Die Orte bekommen jeweils eine Verbindung zueinander mit dem Gewicht.
+			l.ortMenge.get(ortA).addWeg(ortB, gewicht);
 			l.ortMenge.get(ortB).addWeg(ortA, gewicht);
 		}
 
@@ -44,6 +47,7 @@ public class Landkarte {
 
 	}
 
+	// Die Hashmap wird mit den Orten gefüllt.
 	private static void ensureOrt(Landkarte l, int ortA) {
 
 		if (l.ortMenge.containsKey(ortA)) {

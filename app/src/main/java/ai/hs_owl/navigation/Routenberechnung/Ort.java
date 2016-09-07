@@ -4,6 +4,7 @@ import java.util.Set;
 
 import java.util.TreeSet;
 
+//Ein Knotenpunkt von dem Graphen ist ein Objekt der Klasse Ort.
 public class Ort {
 
 	int name;
