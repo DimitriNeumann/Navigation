@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -160,12 +161,16 @@ public class Navigation extends Fragment {
 
             }
         });
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listView.setVisibility(View.VISIBLE);
-                showFavorites();
-            }
+        search.setOnTouchListener(new View.OnTouchListener() {
+                                      @Override
+                                      public boolean onTouch(View view, MotionEvent motionEvent) {
+                                          listView.setVisibility(View.VISIBLE);
+                                          showFavorites();
+                                          return false;
+                                      }
+
+
+            
         });
     }
     /*
