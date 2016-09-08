@@ -75,7 +75,7 @@ public class Synchronize {
                 }
                 m.setImage(LayerManager.getImageSource(1));
             }
-        }, "http://192.168.1.150/navi/ebenen.zip", "http://192.168.1.150/navi/beacons.csv", "http://192.168.1.150/navi/knots.csv", "http://192.168.1.150/navi/connections.csv");
+        }, "http://mbcode.de/navi/ebenen.zip", "http://mbcode.de/navi/beacons.csv", "http://mbcode.de/navi/knots.csv", "http://mbcode.de/navi/connections.csv");
 
     }
     /**

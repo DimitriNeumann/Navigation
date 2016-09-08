@@ -114,6 +114,7 @@ public class AltBeacon implements BeaconConsumer {
 
 
                 if (beacons.size() >= 3) {
+                    Log.i("Beacon Found ", beacons.size()+"");
                     // Beacons sortieren
                     Beacon[] beacons_array = Arrays.copyOf(beacons.toArray(), beacons.size(), Beacon[].class);
                     Arrays.sort(beacons_array, new Comparator<Beacon>() {
@@ -202,6 +203,7 @@ public class AltBeacon implements BeaconConsumer {
         double T = (Math.pow(x_1, 2) - Math.pow(x_2, 2) + Math.pow(y_1, 2) - Math.pow(y_2, 2) + Math.pow(d_2, 2) - Math.pow(d_1, 2.)) / 2.0;
         y = ((T * (x_2 - x_3)) - (S * (x_2 - x_1))) / (((y_1 - y_2) * (x_2 - x_3)) - ((y_3 - y_2) * (x_2 - x_1)));
         x = ((y * (y_1 - y_2)) - T) / (x_2 - x_1);
+        Log.i("Berechnete Position: ", x + "  " + y);
         return new PointF((float) x, (float) y);
     }
 
